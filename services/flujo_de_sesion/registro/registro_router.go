@@ -1,0 +1,141 @@
+package registro
+
+import (
+	"strconv"
+
+	"github.com/labstack/echo/v4"
+
+	//MDOELS
+	models "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/models"
+)
+
+var RegisterRouter *registerRouter
+
+type registerRouter struct {
+}
+
+func (rr *registerRouter) SignUpNumber(c echo.Context) error {
+
+	//Instanciamos una variable del modelo Code
+	var code models.Re_SetGetCode
+
+	//Agregamos los valores enviados a la variable creada
+	err := c.Bind(&code)
+	if err != nil {
+		results := Response_WithInt{Error: true, DataError: "Se debe enviar el numero y el pais, revise la estructura o los valores", Data: 0}
+		return c.JSON(400, results)
+	}
+
+	//Validamos los valores enviados
+	if code.PhoneRegister_Key < 999999 {
+		results := Response_WithInt{Error: true, DataError: "El valor ingresado no cumple con la regla de negocio", Data: 0}
+		return c.JSON(400, results)
+	}
+
+	//Enviamos los datos al servicio
+	status, boolerror, dataerror, data := SignUpNumber_Service(code)
+	results := Response_WithInt{Error: boolerror, DataError: dataerror, Data: data}
+	return c.JSON(status, results)
+
+}
+
+func (cr *registerRouter) UpdateCodeWithCode(c echo.Context) error {
+
+	//Recibimos el id del Business Owner
+	phoneregister := c.Param("phoneRegister")
+
+	//Instanciamos una variable del modelo Code
+	var code models.Re_SetGetCode
+
+	//Agregamos los valores enviados a la variable creada
+	err := c.Bind(&code)
+	if err != nil {
+		results := Response_WithInt{Error: true, DataError: "Se debe enviar el código, revise la estructura o los valores", Data: 0}
+		return c.JSON(400, results)
+	}
+
+	//Validamos los valores enviados
+	if len(phoneregister) < 9 {
+		results := Response_WithInt{Error: true, DataError: "Los valores ingresados no cumplen con la regla de negocio", Data: 0}
+		return c.JSON(400, results)
+	}
+
+	numero_registro, _ := strconv.Atoi(phoneregister)
+
+	//Enviamos los datos al servicio
+	status, boolerror, dataerror, data := UpdateWithCode_Service(numero_registro, code)
+	results := Response_WithPhoneCountryCode{Error: boolerror, DataError: dataerror, Data: data}
+	return c.JSON(status, results)
+}
+
+func (cr *registerRouter) RegisterAnfitrion(c echo.Context) error {
+
+	//Instanciamos una variable del modelo Code
+	var anfitrion models.Pg_BusinessWorker
+
+	//Agregamos los valores enviados a la variable creada
+	err := c.Bind(&anfitrion)
+	if err != nil {
+		results := Response_WithString{Error: true, DataError: "Se debe enviar los datos del pais, nombre, apellido y contraseña del anfitrion, revise la estructura o los valores", Data: ""}
+		return c.JSON(400, results)
+	}
+
+	//Validamos los valores enviados
+	if anfitrion.Phone < 999999 || len(anfitrion.Password) < 8 || len(anfitrion.Name) < 1 || len(anfitrion.LastName) < 1 || anfitrion.IdCountry != 51 && anfitrion.IdCountry != 52 {
+		results := Response_WithString{Error: true, DataError: "El valor ingresado no cumple con la regla de negocio", Data: ""}
+		return c.JSON(400, results)
+	}
+
+	//Enviamos los datos al servicio
+	status, boolerror, dataerror, data := RegisterAnfitrion_Service(anfitrion)
+	results := Response_WithString{Error: boolerror, DataError: dataerror, Data: data}
+	return c.JSON(status, results)
+}
+
+func (cr *registerRouter) UpdatePassword(c echo.Context) error {
+
+	//Instanciamos una variable del modelo Code
+	var anfitrion models.Pg_BusinessWorker
+
+	//Agregamos los valores enviados a la variable creada
+	err := c.Bind(&anfitrion)
+	if err != nil {
+		results := Response_WithString{Error: true, DataError: "Se debe enviar los datos del pais, nombre, apellido y contraseña del anfitrion, revise la estructura o los valores", Data: ""}
+		return c.JSON(400, results)
+	}
+
+	//Validamos los valores enviados
+	if anfitrion.Phone < 999999 || len(anfitrion.Password) < 8 || anfitrion.IdCountry != 51 && anfitrion.IdCountry != 52 {
+		results := Response_WithString{Error: true, DataError: "El valor ingresado no cumple con la regla de negocio", Data: ""}
+		return c.JSON(400, results)
+	}
+
+	//Enviamos los datos al servicio
+	status, boolerror, dataerror, data := UpdatePassword_Service(anfitrion)
+	results := Response_WithString{Error: boolerror, DataError: dataerror, Data: data}
+	return c.JSON(status, results)
+}
+
+func (cr *registerRouter) UpdateNameLastName(c echo.Context) error {
+
+	//Instanciamos una variable del modelo Code
+	var anfitrion models.Pg_BusinessWorker
+
+	//Agregamos los valores enviados a la variable creada
+	err := c.Bind(&anfitrion)
+	if err != nil {
+		results := Response_WithString{Error: true, DataError: "Se debe enviar los datos del pais, nombre, apellido y contraseña del anfitrion, revise la estructura o los valores", Data: ""}
+		return c.JSON(400, results)
+	}
+
+	//Validamos los valores enviados
+	if anfitrion.Phone < 999999 || len(anfitrion.Name) < 1 || len(anfitrion.LastName) < 1 || anfitrion.IdCountry != 51 && anfitrion.IdCountry != 52 {
+		results := Response_WithString{Error: true, DataError: "El valor ingresado no cumple con la regla de negocio", Data: ""}
+		return c.JSON(400, results)
+	}
+
+	//Enviamos los datos al servicio
+	status, boolerror, dataerror, data := UpdateNameLastName_Service(anfitrion)
+	results := Response_WithString{Error: boolerror, DataError: dataerror, Data: data}
+	return c.JSON(status, results)
+}
