@@ -73,7 +73,7 @@ func UpdateWithCode_Service(input_phoneregister int, input models.Re_SetGetCode,
 	var resp PhoneCountryCode
 
 	//Validamos si esta registrado en el modelo Code
-	codigo, _ := code_repository.Re_Get_Phone(input_phoneregister)
+	codigo, _ := code_repository.Re_Get_Phone(input_phoneregister, input_country)
 	if codigo.PhoneRegister_Key < 8 {
 		return 404, true, "Este numero no se encuentra registrado", resp
 	}
@@ -98,7 +98,7 @@ func UpdateWithCode_Service(input_phoneregister int, input models.Re_SetGetCode,
 func RegisterAnfitrion_Service(input_anfitrion models.Pg_BusinessWorker) (int, bool, string, string) {
 
 	//Validamos si esta registrado en el modelo Code
-	codigo, _ := code_repository.Re_Get_Phone(input_anfitrion.Phone)
+	codigo, _ := code_repository.Re_Get_Phone(input_anfitrion.Phone, input_anfitrion.IdCountry)
 	if codigo.PhoneRegister_Key < 8 {
 		return 404, true, "Este numero no se encuentra registrado", ""
 	}
@@ -169,7 +169,7 @@ func RegisterAnfitrion_Service(input_anfitrion models.Pg_BusinessWorker) (int, b
 func UpdatePassword_Service(input_anfitrion models.Pg_BusinessWorker) (int, bool, string, string) {
 
 	//Validamos si esta registrado en el modelo Code
-	codigo, _ := code_repository.Re_Get_Phone(input_anfitrion.Phone)
+	codigo, _ := code_repository.Re_Get_Phone(input_anfitrion.Phone, input_anfitrion.IdCountry)
 	if codigo.PhoneRegister_Key < 8 {
 		return 404, true, "Este numero no se encuentra registrado", ""
 	}
@@ -194,7 +194,7 @@ func UpdatePassword_Service(input_anfitrion models.Pg_BusinessWorker) (int, bool
 func UpdateNameLastName_Service(input_anfitrion models.Pg_BusinessWorker) (int, bool, string, string) {
 
 	//Validamos si esta registrado en el modelo Code
-	codigo, _ := code_repository.Re_Get_Phone(input_anfitrion.Phone)
+	codigo, _ := code_repository.Re_Get_Phone(input_anfitrion.Phone, input_anfitrion.IdCountry)
 	if codigo.PhoneRegister_Key < 8 {
 		return 404, true, "Este numero no se encuentra registrado", ""
 	}
