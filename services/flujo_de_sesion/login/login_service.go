@@ -85,7 +85,7 @@ func TryingLogin_Service(inpuToken string, inputService string, inputModule stri
 		//Buscamos la existencia del registro en Pg - Redis
 		_, error_get_re := worker_reposiroty.Re_Get_Id(claims.Business)
 		if error_get_re != nil {
-			_, error_findworker := worker_reposiroty.Pg_Find_ById(claims.Business)
+			_, error_findworker := worker_reposiroty.Pg_Find_ById(claims.Business, claims.Country)
 			if error_findworker != nil {
 				return anfitrionjwt, true, "N", error_findworker
 			}
