@@ -101,7 +101,7 @@ func RegisterAnfitrion_Service(input_anfitrion models.Pg_BusinessWorker) (int, b
 	//Validamos si esta registrado en el modelo Code
 	codigo, _ := code_repository.Re_Get_Phone(input_anfitrion.Phone, input_anfitrion.IdCountry)
 	if codigo.PhoneRegister_Key < 6 {
-		return 404, true, "Este numero no se encuentra registrado" + strconv.Itoa(codigo.PhoneRegister_Key), ""
+		return 404, true, "Este numero no se encuentra registrado" + strconv.Itoa(codigo.PhoneRegister_Key) + "-" + strconv.Itoa(input_anfitrion.Phone) + "-" + strconv.Itoa(input_anfitrion.IdCountry), ""
 	}
 	if input_anfitrion.CodeRedis != codigo.Code {
 		return 403, true, "Codigo inválido", ""
