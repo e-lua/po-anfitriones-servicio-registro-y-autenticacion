@@ -83,14 +83,14 @@ func TryingLogin_Service(inpuToken string, inputService string, inputModule stri
 	if error_parse == nil {
 
 		//Buscamos la existencia del registro en Pg - Redis
-		_, error_get_re := worker_reposiroty.Re_Get_Id(claims.Business)
+		_, error_get_re := worker_reposiroty.Re_Get_Id(claims.Business, claims.Country)
 		if error_get_re != nil {
 			_, error_findworker := worker_reposiroty.Pg_Find_ById(claims.Business, claims.Country)
 			if error_findworker != nil {
 				return anfitrionjwt, true, "N", error_findworker
 			}
 			//Registramos en Redis
-			_, err_add_re := worker_reposiroty.Re_Set_Id(claims.Business)
+			_, err_add_re := worker_reposiroty.Re_Set_Id(claims.Business, claims.Country)
 			if err_add_re != nil {
 				return anfitrionjwt, true, "N", err_add_re
 			}

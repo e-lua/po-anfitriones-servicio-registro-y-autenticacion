@@ -120,7 +120,7 @@ func RegisterAnfitrion_Service(input_anfitrion models.Pg_BusinessWorker) (int, b
 	}
 
 	//Registramos en Redis
-	_, err_add_re := worker_repository.Re_Set_Id(idworker_business)
+	_, err_add_re := worker_repository.Re_Set_Id(idworker_business, input_anfitrion.IdCountry)
 	if err_add_re != nil {
 		return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), ""
 	}
