@@ -83,8 +83,8 @@ func TryingLogin_Service(inpuToken string, inputService string, inputModule stri
 	if error_parse == nil {
 
 		//Buscamos la existencia del registro en Pg - Redis
-		rpta, error_get_re := worker_reposiroty.Re_Get_Id(claims.Business, claims.Country)
-		if error_get_re != nil || rpta == "" {
+		_, error_get_re := worker_reposiroty.Re_Get_Id(claims.Business, claims.Country)
+		if error_get_re != nil {
 			_, error_findworker := worker_reposiroty.Pg_Find_ById(claims.Business, claims.Country)
 			if error_findworker != nil {
 				return anfitrionjwt, true, "N", error_findworker
@@ -119,7 +119,7 @@ func TryingLogin_Service(inpuToken string, inputService string, inputModule stri
 func Login_Service(inputanfitrion models.Pg_BusinessWorker) (int, bool, string, string) {
 
 	//Buscamos la existencia del registro en Pg
-	worker_found, error_findworker := worker_reposiroty.Pg_FindByPhone(inputanfitrion.Phone)
+	worker_found, error_findworker := worker_reposiroty.Pg_FindByPhone(inputanfitrion.Phone, inputanfitrion.IdCountry)
 	if error_findworker != nil {
 		return 500, true, "Error en el servidor interno al intentar buscar el anfitrión, detalle: " + error_findworker.Error(), ""
 	}

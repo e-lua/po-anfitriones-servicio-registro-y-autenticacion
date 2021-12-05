@@ -22,13 +22,13 @@ func Pg_Find_ById(idbusiness int, idcountry int) (int, error) {
 
 }
 
-func Pg_FindByPhone(phone int) (models.Pg_BusinessWorker, error) {
+func Pg_FindByPhone(phone int, idcountry int) (models.Pg_BusinessWorker, error) {
 
 	var anfitrion models.Pg_BusinessWorker
 
 	db := models.Conectar_Pg_DB()
-	q := "SELECT idbusiness,idworker,idcountry,idrol,phone,password FROM BusinessWorker WHERE phone=$1 LIMIT 1"
-	error_query := db.QueryRow(q, phone).Scan(&anfitrion.IdBusiness, &anfitrion.IdWorker, &anfitrion.IdCountry, &anfitrion.IdRol, &anfitrion.Phone, &anfitrion.Password)
+	q := "SELECT idbusiness,idworker,idcountry,idrol,phone,password FROM BusinessWorker WHERE phone=$1 AND idcountry=$2 LIMIT 1"
+	error_query := db.QueryRow(q, phone, idcountry).Scan(&anfitrion.IdBusiness, &anfitrion.IdWorker, &anfitrion.IdCountry, &anfitrion.IdRol, &anfitrion.Phone, &anfitrion.Password)
 
 	if error_query != nil {
 		return anfitrion, error_query
