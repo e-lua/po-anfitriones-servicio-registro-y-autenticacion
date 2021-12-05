@@ -31,7 +31,7 @@ func Manejadores() {
 	//V1 TO ENTITY-CODE
 	router_code_v1 := version_1.Group("/codes")
 	router_code_v1.POST("", register.RegisterRouter.SignUpNumber)
-	router_code_v1.PUT("/:phoneRegister", register.RegisterRouter.UpdateCodeWithCode)
+	router_code_v1.PUT("/:phoneRegister/:country", register.RegisterRouter.UpdateCodeWithCode)
 
 	//V1 TO ANFITRION
 	router_anfitrion_v1 := version_1.Group("/worker")

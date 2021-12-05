@@ -6,6 +6,17 @@ type Response_WithInt struct {
 	Data      int    `json:"data"`
 }
 
+type Response_SignInFirstStep struct {
+	Error     bool            `json:"error"`
+	DataError string          `json:"dataError"`
+	Data      SignInFirstStep `json:"data"`
+}
+
+type SignInFirstStep struct {
+	Phone   int `json:"phone"`
+	Country int `json:"country"`
+}
+
 type Response_WithString struct {
 	Error     bool   `json:"error"`
 	DataError string `json:"dataError"`

@@ -26,10 +26,12 @@ func encrypt(input string) (string, error) {
 
 //FUNCIONES PUBLICAS
 
-func SignUpNumber_Service(inputcode models.Re_SetGetCode) (int, bool, string, int) {
+func SignUpNumber_Service(inputcode models.Re_SetGetCode) (int, bool, string, SignInFirstStep) {
+
+	var phone_and_code SignInFirstStep
 
 	if inputcode.Country != 51 && inputcode.Country != 52 {
-		return 406, true, "El codigo de pais ingresado no esta incluido en la lista países disponibles de Restoner", 0
+		return 406, true, "El codigo de pais ingresado no esta incluido en la lista países disponibles de Restoner", phone_and_code
 	}
 
 	//Generamos un codigo random
@@ -55,14 +57,17 @@ func SignUpNumber_Service(inputcode models.Re_SetGetCode) (int, bool, string, in
 	//Buscamos si el numero ya ha sido registrado en el modelo Code
 	phoneregister, err_add := code_repository.Re_Set_Phone(inputcode)
 	if err_add != nil {
-		return 500, true, "Error en el servidor interno al intentar registrar el código, detalle: " + err_add.Error(), 0
+		return 500, true, "Error en el servidor interno al intentar registrar el código, detalle: " + err_add.Error(), phone_and_code
 	}
 
+	phone_and_code.Phone = phoneregister
+	phone_and_code.Country = inputcode.Code
+
 	//Si todo ha ido bien envia un Status 200
-	return 201, false, "", phoneregister
+	return 201, false, "", phone_and_code
 }
 
-func UpdateWithCode_Service(input_phoneregister int, input models.Re_SetGetCode) (int, bool, string, PhoneCountryCode) {
+func UpdateWithCode_Service(input_phoneregister int, input models.Re_SetGetCode, input_country int) (int, bool, string, PhoneCountryCode) {
 
 	//Instanciamos la variable del help
 	var resp PhoneCountryCode
@@ -77,13 +82,13 @@ func UpdateWithCode_Service(input_phoneregister int, input models.Re_SetGetCode)
 	}
 
 	//Validamos si esta registrado en el modelo
-	anfitrion_found, _ := worker_repository.Pg_FindByPhone(input_phoneregister, input.Country)
+	anfitrion_found, _ := worker_repository.Pg_FindByPhone(input_phoneregister, input_country)
 
 	if anfitrion_found.IdBusiness > 8 {
 		return 403, true, "Este número ya se ha registrado", resp
 	}
 
-	resp.Country = codigo.Country
+	resp.Country = input_country
 	resp.Phone = input_phoneregister
 	resp.Code = codigo.Code
 

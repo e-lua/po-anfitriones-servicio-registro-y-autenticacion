@@ -34,7 +34,7 @@ func (rr *registerRouter) SignUpNumber(c echo.Context) error {
 
 	//Enviamos los datos al servicio
 	status, boolerror, dataerror, data := SignUpNumber_Service(code)
-	results := Response_WithInt{Error: boolerror, DataError: dataerror, Data: data}
+	results := Response_SignInFirstStep{Error: boolerror, DataError: dataerror, Data: data}
 	return c.JSON(status, results)
 
 }
@@ -43,6 +43,7 @@ func (cr *registerRouter) UpdateCodeWithCode(c echo.Context) error {
 
 	//Recibimos el id del Business Owner
 	phoneregister := c.Param("phoneRegister")
+	country := c.Param("country")
 
 	//Instanciamos una variable del modelo Code
 	var code models.Re_SetGetCode
@@ -60,10 +61,12 @@ func (cr *registerRouter) UpdateCodeWithCode(c echo.Context) error {
 		return c.JSON(400, results)
 	}
 
+	//Convertimos texto a numero
 	numero_registro, _ := strconv.Atoi(phoneregister)
+	country_registro, _ := strconv.Atoi(country)
 
 	//Enviamos los datos al servicio
-	status, boolerror, dataerror, data := UpdateWithCode_Service(numero_registro, code)
+	status, boolerror, dataerror, data := UpdateWithCode_Service(numero_registro, code, country_registro)
 	results := Response_WithPhoneCountryCode{Error: boolerror, DataError: dataerror, Data: data}
 	return c.JSON(status, results)
 }
