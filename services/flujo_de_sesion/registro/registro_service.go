@@ -3,6 +3,7 @@ package registro
 import (
 	"bytes"
 	"encoding/json"
+	"strconv"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -99,8 +100,8 @@ func RegisterAnfitrion_Service(input_anfitrion models.Pg_BusinessWorker) (int, b
 
 	//Validamos si esta registrado en el modelo Code
 	codigo, _ := code_repository.Re_Get_Phone(input_anfitrion.Phone, input_anfitrion.IdCountry)
-	if codigo.PhoneRegister_Key < 8 {
-		return 404, true, "Este numero no se encuentra registrado", ""
+	if codigo.PhoneRegister_Key < 6 {
+		return 404, true, "Este numero no se encuentra registrado" + strconv.Itoa(codigo.PhoneRegister_Key), ""
 	}
 	if input_anfitrion.CodeRedis != codigo.Code {
 		return 403, true, "Codigo inválido", ""
