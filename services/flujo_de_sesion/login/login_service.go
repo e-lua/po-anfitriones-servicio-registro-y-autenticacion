@@ -96,6 +96,8 @@ func TryingLogin_Service(inpuToken string, inputService string, inputModule stri
 			}
 		}
 
+		time.Sleep(1 * time.Second)
+
 		anfitrionjwt.IdBusiness = claims.Business
 		anfitrionjwt.IdWorker = claims.Worker
 		anfitrionjwt.IdCountry = claims.Country
@@ -104,6 +106,8 @@ func TryingLogin_Service(inpuToken string, inputService string, inputModule stri
 		anfitrionjwt.Module = inputModule
 		anfitrionjwt.Epic = inputEpic
 		anfitrionjwt.Endpoint = inputEndpoint
+
+		time.Sleep(1 * time.Second)
 
 		return anfitrionjwt, false, "N", nil
 	}
