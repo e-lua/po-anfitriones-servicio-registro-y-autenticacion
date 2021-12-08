@@ -35,6 +35,6 @@ func Pg_FindByPhone(phone int, idcountry int) (models.Pg_BusinessWorker, error) 
 		defer db.Close()
 		return anfitrion, error_show
 	}
-	db.Close()
+	defer db.Close()
 	return anfitrion, nil
 }
