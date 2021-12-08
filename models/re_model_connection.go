@@ -7,21 +7,25 @@ import (
 	"github.com/gomodule/redigo/redis"
 )
 
+type RedisDB struct {
+	redis.Conn
+}
+
+var RedisCN = GetConn()
+
 var (
 	once sync.Once
 	p    *redis.Pool
 )
 
-var RedisCN = GetConnRedis()
-
-func GetConnRedis() *redis.Pool {
+func GetConn() *redis.Pool {
 
 	once.Do(func() {
 		p = &redis.Pool{
 			Dial: func() (redis.Conn, error) {
-				conn, err := redis.DialURL("rediss://default:3eBnVvBJMUpeJdaq@po-comensales-anfitriones-do-user-10365906-0.b.db.ondigitalocean.com:25061")
+				conn, err := redis.Dial("tcp", "redis:6379")
 				if err != nil {
-					log.Fatal("ERROR: No se puede conectar con Redis" + err.Error())
+					log.Fatal("ERROR: No se puede conectar con Redis")
 				}
 				return conn, err
 			},
@@ -29,5 +33,4 @@ func GetConnRedis() *redis.Pool {
 	})
 
 	return p
-
 }
