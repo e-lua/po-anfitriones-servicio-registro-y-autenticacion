@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
-	"golang.org/x/net/context"
 )
 
 type RedisDB struct {
@@ -22,7 +21,7 @@ func GetConn() *redis.Pool {
 		IdleTimeout:     3 * time.Second,
 		MaxConnLifetime: 10 * time.Second,
 		Wait:            true,
-		DialContext: func(context.Context) (redis.Conn, error) {
+		Dial: func() (redis.Conn, error) {
 			conn, err := redis.Dial("tcp", "redis:6379")
 			if err != nil {
 				log.Fatal("ERROR: No se puede conectar con Redis")
