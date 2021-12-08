@@ -20,7 +20,6 @@ func GetConn() *redis.Pool {
 		MaxActive:       120,
 		IdleTimeout:     3 * time.Second,
 		MaxConnLifetime: 10 * time.Second,
-		Wait:            true,
 		Dial: func() (redis.Conn, error) {
 			conn, err := redis.Dial("tcp", "redis:6379")
 			if err != nil {
