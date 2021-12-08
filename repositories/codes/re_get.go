@@ -15,17 +15,17 @@ func Re_Get_Phone(phoneregister int, idcountry int) (models.Re_SetGetCode, error
 	reply, err := redis.String(models.RedisCN.Get().Do("GET", strconv.Itoa(phoneregister)+strconv.Itoa(idcountry)))
 
 	if err != nil {
-		defer models.RedisCN.Close()
+		defer models.RedisCN.Get().Close()
 		return code, err
 	}
 
 	err = json.Unmarshal([]byte(reply), &code)
 
 	if err != nil {
-		defer models.RedisCN.Close()
+		defer models.RedisCN.Get().Close()
 		return code, err
 	}
 
-	defer models.RedisCN.Close()
+	defer models.RedisCN.Get().Close()
 	return code, nil
 }
