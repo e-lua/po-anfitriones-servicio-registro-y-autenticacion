@@ -25,7 +25,7 @@ func GetConn() *redis.Pool {
 			Dial: func() (redis.Conn, error) {
 				conn, err := redis.Dial("tcp", "rediss://default:3eBnVvBJMUpeJdaq@po-comensales-anfitriones-do-user-10365906-0.b.db.ondigitalocean.com:25061")
 				if err != nil {
-					log.Fatal("ERROR: No se puede conectar con Redis")
+					log.Fatal("ERROR: No se puede conectar con Redis" + err.Error())
 				}
 				return conn, err
 			},
