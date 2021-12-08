@@ -18,7 +18,7 @@ func Pg_Find_ById(idbusiness int, idcountry int) (int, error) {
 		defer db.Close()
 		return idbusiness_q, error_show
 	}
-
+	db.Close()
 	return idbusiness_q, nil
 
 }
@@ -35,6 +35,6 @@ func Pg_FindByPhone(phone int, idcountry int) (models.Pg_BusinessWorker, error) 
 		defer db.Close()
 		return anfitrion, error_show
 	}
-
+	db.Close()
 	return anfitrion, nil
 }
