@@ -139,7 +139,6 @@ func RegisterAnfitrion_Service(input_anfitrion models.Pg_BusinessWorker) (int, b
 		//Comienza el proceso de MQTT
 		ch, error_conection := models.MqttCN.Channel()
 		if error_conection != nil {
-			defer ch.Close()
 			log.Error(error_conection)
 		}
 
@@ -162,7 +161,6 @@ func RegisterAnfitrion_Service(input_anfitrion models.Pg_BusinessWorker) (int, b
 			log.Error(error_publish)
 		}
 
-		defer ch.Close()
 	}()
 
 	time.Sleep(2 * time.Second)

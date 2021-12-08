@@ -15,10 +15,9 @@ func Pg_Find_ById(idbusiness int, idcountry int) (int, error) {
 	error_show := db.QueryRow(context.Background(), q, idbusiness, idcountry).Scan(&idbusiness_q)
 
 	if error_show != nil {
-		defer db.Close()
+
 		return idbusiness_q, error_show
 	}
-	db.Close()
 	return idbusiness_q, nil
 
 }

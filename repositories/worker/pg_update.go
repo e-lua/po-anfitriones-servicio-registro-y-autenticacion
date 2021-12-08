@@ -15,7 +15,6 @@ func Pg_Update_Password(anfitrion models.Pg_BusinessWorker) error {
 		return err_update
 	}
 
-	defer db.Close()
 	return nil
 }
 
