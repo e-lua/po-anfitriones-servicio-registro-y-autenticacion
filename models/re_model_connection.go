@@ -16,16 +16,20 @@ var RedisCN = GetConn()
 func GetConn() *redis.Pool {
 
 	p := &redis.Pool{
-		MaxIdle:         20,
-		MaxActive:       120,
-		IdleTimeout:     3 * time.Second,
+		MaxIdle:         50,
+		MaxActive:       1000,
+		IdleTimeout:     240 * time.Second,
 		MaxConnLifetime: 10 * time.Second,
 		Wait:            true,
 		Dial: func() (redis.Conn, error) {
+			redis.DialConnectTimeout(2 * time.Second)
+			redis.DialReadTimeout(2 * time.Second)
+			redis.DialWriteTimeout(2 * time.Second)
 			conn, err := redis.Dial("tcp", "redis:6379")
 			if err != nil {
 				log.Fatal("ERROR: No se puede conectar con Redis")
 			}
+
 			return conn, err
 		},
 	}
