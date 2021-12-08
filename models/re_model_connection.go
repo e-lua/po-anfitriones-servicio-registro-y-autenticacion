@@ -2,7 +2,7 @@ package models
 
 import (
 	"log"
-	"time"
+	"sync"
 
 	"github.com/gomodule/redigo/redis"
 )
@@ -13,23 +13,24 @@ type RedisDB struct {
 
 var RedisCN = GetConn()
 
+var (
+	once sync.Once
+	p    *redis.Pool
+)
+
 func GetConn() *redis.Pool {
 
-	p := &redis.Pool{
-		MaxIdle: 2,
-		//MaxActive:       120,
-		Dial: func() (redis.Conn, error) {
-			redis.DialConnectTimeout(2 * time.Second)
-			redis.DialReadTimeout(2 * time.Second)
-			redis.DialWriteTimeout(2 * time.Second)
-			conn, err := redis.Dial("tcp", "redis:6379")
-			if err != nil {
-				log.Fatal("ERROR: No se puede conectar con Redis")
-			}
-
-			return conn, err
-		},
-	}
+	once.Do(func() {
+		p = &redis.Pool{
+			Dial: func() (redis.Conn, error) {
+				conn, err := redis.Dial("tcp", "redis:6379")
+				if err != nil {
+					log.Fatal("ERROR: No se puede conectar con Redis")
+				}
+				return conn, err
+			},
+		}
+	})
 
 	return p
 }
