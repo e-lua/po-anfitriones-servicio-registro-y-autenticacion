@@ -1,6 +1,8 @@
 package models
 
 import (
+	"log"
+
 	"github.com/gomodule/redigo/redis"
 )
 
@@ -10,29 +12,19 @@ type RedisDB struct {
 
 var RedisCN = GetConn()
 
-func GetConn() redis.Conn {
+func GetConn() *redis.Pool {
 
-	localURL := "redis:6379"
-	//redisURL := "rediss://" + username_re + ":" + password_re + "@" + host_re + ":" + port_re
-	redisURL := "redis://" + localURL
-	c, err := connectRedis(redisURL)
-
-	if err != nil {
-		return nil
+	pool := &redis.Pool{
+		MaxIdle:   20,
+		MaxActive: 80,
+		Dial: func() (redis.Conn, error) {
+			conn, err := redis.Dial("tcp", "redis:6379")
+			if err != nil {
+				log.Fatal("ERROR: No se puede conectar con Redis")
+			}
+			return conn, err
+		},
 	}
 
-	return c
-}
-
-//format url ==> "redis://redis:6379"
-func connectRedis(redisURL string) (redis.Conn, error) {
-	if redisURL != "" {
-		redisPassword := ""
-		return redis.DialURL(redisURL, redis.DialPassword(redisPassword))
-	} else {
-		localURL := "redis:6379"
-		//redisURL := "rediss://" + username_re + ":" + password_re + "@" + host_re + ":" + port_re
-		redisURL := "redis://" + localURL
-		return redis.DialURL(redisURL)
-	}
+	return pool
 }

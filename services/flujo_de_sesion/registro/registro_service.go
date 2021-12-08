@@ -124,6 +124,10 @@ func RegisterAnfitrion_Service(input_anfitrion models.Pg_BusinessWorker) (int, b
 		return 500, true, "Error interno en el servidor al intentar registrar al anfitrion, detalle: " + error_insert_anfitrion.Error(), ""
 	}
 
+	go func() {
+		worker_repository.Pg_Update_IdBusiness(idworker_business)
+	}()
+
 	//Registramos en Redis
 	_, err_add_re := worker_repository.Re_Set_Id(idworker_business, input_anfitrion.IdCountry)
 	if err_add_re != nil {
@@ -183,7 +187,7 @@ func UpdatePassword_Service(input_anfitrion models.Pg_BusinessWorker) (int, bool
 	input_anfitrion.UpdatedDate = time.Now()
 
 	//Enviamos la variable instanciada al repository
-	_, error_update_password := worker_repository.Pg_Update_Password(input_anfitrion)
+	error_update_password := worker_repository.Pg_Update_Password(input_anfitrion)
 	if error_update_password != nil {
 		return 500, true, "Error interno en el servidor al intentar actualizar la contraseña, detalle: " + error_update_password.Error(), ""
 	}
@@ -207,7 +211,7 @@ func UpdateNameLastName_Service(input_anfitrion models.Pg_BusinessWorker) (int, 
 	input_anfitrion.UpdatedDate = time.Now()
 
 	//Enviamos la variable instanciada al repository
-	_, error_update_password := worker_repository.Pg_Update_NameLastName(input_anfitrion)
+	error_update_password := worker_repository.Pg_Update_NameLastName(input_anfitrion)
 	if error_update_password != nil {
 		return 500, true, "Error interno en el servidor al intentar actualizar la contraseña, detalle: " + error_update_password.Error(), ""
 	}
