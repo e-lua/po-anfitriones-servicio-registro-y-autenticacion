@@ -16,11 +16,8 @@ var RedisCN = GetConn()
 func GetConn() *redis.Pool {
 
 	p := &redis.Pool{
-		MaxIdle:         50,
-		MaxActive:       120,
-		IdleTimeout:     4 * time.Second,
-		MaxConnLifetime: 4 * time.Second,
-		Wait:            true,
+		MaxIdle: 2,
+		//MaxActive:       120,
 		Dial: func() (redis.Conn, error) {
 			redis.DialConnectTimeout(2 * time.Second)
 			redis.DialReadTimeout(2 * time.Second)
