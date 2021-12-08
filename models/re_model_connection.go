@@ -2,6 +2,7 @@ package models
 
 import (
 	"log"
+	"time"
 
 	"github.com/gomodule/redigo/redis"
 )
@@ -16,9 +17,9 @@ func GetConn() *redis.Pool {
 
 	pool := &redis.Pool{
 		MaxIdle:         20,
-		MaxActive:       80,
-		IdleTimeout:     2,
-		MaxConnLifetime: 10,
+		MaxActive:       120,
+		IdleTimeout:     3 * time.Second,
+		MaxConnLifetime: 10 * time.Second,
 		Wait:            true,
 		Dial: func() (redis.Conn, error) {
 			conn, err := redis.Dial("tcp", "redis:6379")
