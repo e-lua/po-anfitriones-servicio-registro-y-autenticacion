@@ -32,9 +32,8 @@ func Pg_FindByPhone(phone int, idcountry int) (models.Pg_BusinessWorker, error) 
 	error_show := db.QueryRow(context.Background(), q, phone, idcountry).Scan(&anfitrion.IdBusiness, &anfitrion.IdWorker, &anfitrion.IdCountry, &anfitrion.IdRol, &anfitrion.Phone, &anfitrion.Password)
 
 	if error_show != nil {
-		defer db.Close()
 		return anfitrion, error_show
 	}
-	defer db.Close()
+
 	return anfitrion, nil
 }

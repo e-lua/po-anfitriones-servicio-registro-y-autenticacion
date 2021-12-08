@@ -18,6 +18,6 @@ func Pg_Add(anfitrion_pg models.Pg_BusinessWorker) (int, error) {
 	inserted := db.QueryRow(context.Background(), query, anfitrion_pg.IdCountry, anfitrion_pg.Phone, anfitrion_pg.Name, anfitrion_pg.LastName, anfitrion_pg.Password, time.Now(), 1)
 
 	inserted.Scan(&id_inserted)
-	defer db.Close()
+
 	return id_inserted, nil
 }

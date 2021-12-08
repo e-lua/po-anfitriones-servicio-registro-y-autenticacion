@@ -28,7 +28,6 @@ func Pg_Update_NameLastName(anfitrion models.Pg_BusinessWorker) error {
 		return err_update
 	}
 
-	defer db.Close()
 	return nil
 }
 
@@ -41,6 +40,5 @@ func Pg_Update_IdBusiness(idworker int) error {
 		return err_update
 	}
 
-	defer db.Close()
 	return nil
 }
