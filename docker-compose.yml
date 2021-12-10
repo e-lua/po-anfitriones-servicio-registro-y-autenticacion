@@ -6,8 +6,7 @@ services:
     restart: always 
     build: .
     labels: 
-      - "traefik.http.routers.app.entrypoints=websecurity"
-      - "traefik.http.routers.app.tls.certresolver=myresolver"
+      - "traefik.http.routers.app.rule=Host(`app.localhost`)"
     networks:
       - backend
     ports:
@@ -50,22 +49,15 @@ services:
       - postgres
   traefik: # apache.app.test - nginx.app.test
     image: traefik:v2.3.6
-    labels: 
-      - "traefik.http.routers.api.service=api@internal"
-      - "traefik.http.routers.api.middlewares=auth"
-      - "traefik.http.middlewares.auth.basicauth.users=admin:{SHA}fEqNCco3Yq9h5ZUglD3CZJT4lBs="
-      - "traefik.http.routers.traefik.entrypoints=websecurity"
-      - "traefik.http.routers.traefik.tls.certresolver=myresolver"
     ports: 
-      - 80:80
-      - 8080:8080
+      - 100:80
+      - 8052:8080
       - 443:443
     volumes: 
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik.yml:/traefik.yml
       - ./acme.json:/acme.json
-      - ./traefik.log:/traefik.log
-      - ./config.yml:/config.yml
+
     networks: 
       backend:
 networks:

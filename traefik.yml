@@ -10,19 +10,3 @@ entrypoints:
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
-  
-  file:
-    filename: /config.yml
-
-certificatesResolvers:
-  myresolver:
-    acme:
-      email: "friendlyfood.correo@gmail.com"
-      storage: /acme.json
-      httpChallenge:
-        entrypoint: web
-
-log:
-  filePath: "/traefik.log"        
-  level: ERROR
-  format: json
