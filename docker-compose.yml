@@ -6,7 +6,7 @@ services:
     restart: always 
     build: .
     labels: 
-      - "traefik.http.routers.app.rule=Host(`app`)"
+      - "traefik.http.routers.app.rule=Host(`localhost`)"
     networks:
       - backend
     ports:
@@ -50,7 +50,7 @@ services:
   traefik: # apache.app.test - nginx.app.test
     image: traefik:v2.3.6
     labels: 
-      - "traefik.http.routers.api.rule=Host(`app`)"
+      - "traefik.http.routers.api.rule=Host(`localhost`)"
     ports: 
       - 100:80
       - 8052:8080
