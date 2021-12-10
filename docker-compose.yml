@@ -6,7 +6,7 @@ services:
     restart: always 
     build: .
     labels: 
-      - "traefik.http.routers.app.rule=Host(`app.localhost`)"
+      - "traefik.http.routers.app.rule=Host(`localhost`)"
     networks:
       - backend
     ports:
