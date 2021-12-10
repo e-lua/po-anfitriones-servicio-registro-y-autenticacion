@@ -5,6 +5,9 @@ services:
     container_name: restonercomensales_app_servicio_auth_registro
     restart: always 
     build: .
+    labels: 
+      - "traefik.http.routers.app.entrypoints=websecurity"
+      - "traefik.http.routers.app.tls.certresolver=myresolver"
     networks:
       - backend
     ports:
@@ -45,8 +48,30 @@ services:
       PGADMIN_DEFAULT_PASSWORD: adminx
     depends_on:
       - postgres
+  traefik: # apache.app.test - nginx.app.test
+    image: traefik:v2.3.6
+    labels: 
+      - "traefik.http.routers.api.service=api@internal"
+      - "traefik.http.routers.api.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.users=admin:{SHA}fEqNCco3Yq9h5ZUglD3CZJT4lBs="
+      - "traefik.http.routers.traefik.entrypoints=websecurity"
+      - "traefik.http.routers.traefik.tls.certresolver=myresolver"
+    ports: 
+      - 80:80
+      - 443:443
+    volumes: 
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.yml:/traefik.yml
+      - ./acme.json:/acme.json
+      - ./traefik.log:/traefik.log
+      - ./config.yml:/config.yml
+    networks: 
+      backend:
 networks:
   backend:
+    driver: bridge
+    ipam: 
+      driver: default 
 
 
 
