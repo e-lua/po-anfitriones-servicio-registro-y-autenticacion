@@ -29,3 +29,16 @@ type JWTRequest struct {
 	Epic       string `json:"epic"`
 	Endpoint   string `json:"endpoint"`
 }
+
+/*-------------------------------------*/
+
+type Responde_JWTAndRol struct {
+	Error     bool      `json:"error"`
+	DataError string    `json:"dataError"`
+	Data      JWTAndRol `json:"data"`
+}
+
+type JWTAndRol struct {
+	JWT string `json:"jwt"`
+	Rol int    `json:"rol"`
+}

@@ -43,11 +43,11 @@ func (lr *loginRouter) Login(c echo.Context) error {
 	expirationTime := time.Now().Add(72 * time.Hour)
 	http.SetCookie(c.Response().Writer, &http.Cookie{
 		Name:    "token",
-		Value:   data,
+		Value:   data.JWT,
 		Expires: expirationTime,
 	})
 
-	results := Response{Error: boolerror, DataError: dataerror, Data: data}
+	results := Responde_JWTAndRol{Error: boolerror, DataError: dataerror, Data: data}
 	return c.JSON(status, results)
 
 }

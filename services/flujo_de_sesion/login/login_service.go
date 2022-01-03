@@ -116,28 +116,34 @@ func TryingLogin_Service(inpuToken string, inputService string, inputModule stri
 	return anfitrionjwt, true, "N", error_parse
 }
 
-func Login_Service(inputanfitrion models.Pg_BusinessWorker) (int, bool, string, string) {
+func Login_Service(inputanfitrion models.Pg_BusinessWorker) (int, bool, string, JWTAndRol) {
+
+	//Variable
+	var jwt_and_rol JWTAndRol
 
 	//Buscamos la existencia del registro en Pg
 	worker_found, error_findworker := worker_reposiroty.Pg_FindByPhone(inputanfitrion.Phone, inputanfitrion.IdCountry)
 	if error_findworker != nil {
-		return 500, true, "Error en el servidor interno al intentar buscar el anfitrión, detalle: " + error_findworker.Error(), ""
+		return 500, true, "Error en el servidor interno al intentar buscar el anfitrión, detalle: " + error_findworker.Error(), jwt_and_rol
 	}
 	if strconv.Itoa(worker_found.Phone) == "" {
-		return 404, true, "Este anfitrion no se encuentra registrado", ""
+		return 404, true, "Este anfitrion no se encuentra registrado", jwt_and_rol
 	}
 
 	//Intentamos el login
 	error_compareToken := compareToken(worker_found.Password, inputanfitrion.Password)
 	if error_compareToken != nil {
-		return 403, true, "Telefono y/o Contraseña incorrectos, detalle: " + error_compareToken.Error(), ""
+		return 403, true, "Telefono y/o Contraseña incorrectos, detalle: " + error_compareToken.Error(), jwt_and_rol
 	}
 
 	jwtKey, error_generatingJWT := generateJWT(worker_found)
 	if error_generatingJWT != nil {
-		return 500, true, "Error en el servidor interno al intentar generar el token, detalle: " + error_generatingJWT.Error(), ""
+		return 500, true, "Error en el servidor interno al intentar generar el token, detalle: " + error_generatingJWT.Error(), jwt_and_rol
 	}
 
-	return 201, false, "", jwtKey
+	jwt_and_rol.JWT = jwtKey
+	jwt_and_rol.Rol = worker_found.IdRol
+
+	return 201, false, "", jwt_and_rol
 
 }
