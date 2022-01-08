@@ -143,6 +143,7 @@ func Login_Service(inputanfitrion models.Pg_BusinessWorker) (int, bool, string, 
 
 	jwt_and_rol.JWT = jwtKey
 	jwt_and_rol.Rol = worker_found.IdRol
+	jwt_and_rol.Phone = inputanfitrion.Phone
 	jwt_and_rol.Country = worker_found.IdCountry
 	jwt_and_rol.Name = worker_found.Name
 	jwt_and_rol.Lastname = worker_found.LastName
