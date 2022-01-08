@@ -39,6 +39,10 @@ type Responde_JWTAndRol struct {
 }
 
 type JWTAndRol struct {
-	JWT string `json:"jwt"`
-	Rol int    `json:"rol"`
+	JWT      string `json:"jwt"`
+	Rol      int    `json:"rol"`
+	Phone    int    `json:"phone"`
+	Country  int    `json:"country"`
+	Name     string `json:"name"`
+	Lastname string `json:"lastname"`
 }
