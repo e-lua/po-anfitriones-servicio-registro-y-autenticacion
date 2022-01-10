@@ -1,0 +1,78 @@
+package profile
+
+import (
+
+	//MDOELS
+
+	"golang.org/x/crypto/bcrypt"
+
+	//REPOSITORIES
+	worker_repository "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/repositories/worker"
+)
+
+//FUNCIONES PRIVADAS
+
+func compareToken(inputpassword_comensal_founded string, inputpassword string) error {
+
+	//brypt trabaja con slices de bytes - Esta password no esta encriptada
+	passwordBytes := []byte(inputpassword)
+
+	//Password se encripta
+	passwordBD := []byte(inputpassword_comensal_founded)
+
+	//Comparamos si el hash encriptado es el password que se escribio en el Login
+	error_compare_hash := bcrypt.CompareHashAndPassword(passwordBD, passwordBytes)
+	if error_compare_hash != nil {
+		return error_compare_hash
+	}
+
+	return nil
+}
+
+func encrypt(input string) (string, error) {
+	cost := 8
+	bytes, err := bcrypt.GenerateFromPassword([]byte(input), cost)
+	return string(bytes), err
+}
+
+/*-------------------------------FUNCIONES PUBLICAS-------------------------------*/
+
+func UpdateNameLastName_Service(input_business Entry_Profile, input_idworker int) (int, bool, string, string) {
+
+	//Enviamos la variable instanciada al repository
+	error_update_password := worker_repository.Pg_Update_NameLastName(input_business.Name, input_business.LastName, input_idworker)
+	if error_update_password != nil {
+		return 500, true, "Error interno en el servidor al intentar actualizar la contraseña, detalle: " + error_update_password.Error(), ""
+	}
+
+	return 201, false, "", "Nombre y apellidos actualizados correctamente"
+}
+
+func UpdatePassword_Service(input_entrydata EntryData_Password, idbusiness int) (int, bool, string, string) {
+
+	//Buscamos la existencia del registro en Pg
+	pass, error_findcomensal := worker_repository.Pg_FindPassword_ById(idbusiness)
+	if error_findcomensal != nil {
+		return 500, true, "Error en el servidor interno al intentar buscar el comensal, detalle: " + error_findcomensal.Error(), ""
+	}
+	if pass == "" {
+		return 404, true, "Este anfitrion no se encuentra registrado", ""
+	}
+
+	//Intentamos el login
+	error_compareToken := compareToken(pass, input_entrydata.OldPassword)
+	if error_compareToken != nil {
+		return 403, true, "Contraseña incorrecta, detalle: " + error_compareToken.Error(), ""
+	}
+
+	//Encriptar password
+	encrypted_pass, _ := encrypt(input_entrydata.NewPassword)
+
+	//Enviamos la variable instanciada al repository
+	error_update_password := worker_repository.Pg_Update_Password(encrypted_pass, idbusiness)
+	if error_update_password != nil {
+		return 500, true, "Error interno en el servidor al intentar actualizar la contraseña, detalle: " + error_update_password.Error(), ""
+	}
+
+	return 201, false, "", "Contraseña actualizada correctamente"
+}

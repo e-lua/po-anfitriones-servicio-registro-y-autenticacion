@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/rs/cors"
 
+	profile "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/services/flujo_de_perfil/profile"
 	login "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/services/flujo_de_sesion/login"
 	register "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/services/flujo_de_sesion/registro"
 )
@@ -33,11 +34,19 @@ func Manejadores() {
 	router_code_v1.POST("", register.RegisterRouter.SignUpNumber)
 	router_code_v1.PUT("/:phoneRegister/:country", register.RegisterRouter.UpdateCodeWithCode)
 
+	//V1 TO RECOVER
+	router_recover_v1 := version_1.Group("/recover")
+	router_recover_v1.PUT("/password", register.RegisterRouter.UpdatePassword_Recover)
+
 	//V1 TO ANFITRION
 	router_anfitrion_v1 := version_1.Group("/worker")
 	router_anfitrion_v1.POST("", register.RegisterRouter.RegisterAnfitrion)
-	router_anfitrion_v1.POST("/update/password", register.RegisterRouter.UpdatePassword)
-	router_anfitrion_v1.POST("/update/name_lastname", register.RegisterRouter.UpdateNameLastName)
+	router_anfitrion_v1.POST("/update/password", profile.ProfileRouter.UpdatePassword)
+	router_anfitrion_v1.POST("/update/name_lastname", profile.ProfileRouter.UpdateNameLastName)
+
+	//V1 TO ENTITY-PROFILE
+	router_anfitrion_v1.PUT("/password", profile.ProfileRouter.UpdatePassword)
+	router_anfitrion_v1.PUT("/profile", profile.ProfileRouter.UpdateNameLastName)
 
 	//V1 TO TRYLOGIN
 	router_login := version_1.Group("/trylogin")

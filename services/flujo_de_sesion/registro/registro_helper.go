@@ -34,3 +34,10 @@ type PhoneCountryCode struct {
 	Country int `json:"country"`
 	Code    int `json:"code"`
 }
+
+type EntryData_Password struct {
+	NewPassword string `json:"newpassword"`
+	Phone       int    `json:"phone"`
+	Country     int    `json:"country"`
+	Code        int    `json:"code"`
+}

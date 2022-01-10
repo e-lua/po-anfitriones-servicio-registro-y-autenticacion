@@ -36,3 +36,35 @@ func Pg_FindByPhone(phone int, idcountry int) (models.Pg_BusinessWorker, error) 
 
 	return anfitrion, nil
 }
+
+func Pg_FindPassword_ById(idbusiness int) (string, error) {
+
+	var pass string
+
+	db := models.Conectar_Pg_DB()
+	q := "SELECT password FROM BusinessWorker WHERE idbusiness=$1"
+	error_showname := db.QueryRow(context.Background(), q, idbusiness).Scan(&pass)
+
+	if error_showname != nil {
+		return pass, error_showname
+	}
+
+	//Si todo esta bien
+	return pass, nil
+
+}
+
+func Pg_Find_QtyCodesRegistered(idbusiness int, idcountry int) (int, error) {
+
+	var codesregistered_pg int
+
+	db := models.Conectar_Pg_DB()
+	q := "SELECT codesregistered FROM BusinessWorker WHERE idcomensal=$1 AND idcountry=$2 LIMIT 1"
+	error_query := db.QueryRow(context.Background(), q, idbusiness, idcountry).Scan(&codesregistered_pg)
+
+	if error_query != nil {
+		return codesregistered_pg, error_query
+	}
+
+	return codesregistered_pg, nil
+}
