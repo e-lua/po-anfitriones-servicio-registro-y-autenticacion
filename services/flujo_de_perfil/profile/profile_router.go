@@ -17,7 +17,7 @@ type profileRouter struct {
 
 func GetJWT(jwt string) (int, bool, string, int) {
 	//Obtenemos los datos del auth
-	respuesta, _ := http.Get("http://localhost:3000/v1/trylogin?jwt=" + jwt)
+	respuesta, _ := http.Get("http://localhost:5000/v1/trylogin?jwt=" + jwt)
 	var get_respuesta ResponseJWT
 	error_decode_respuesta := json.NewDecoder(respuesta.Body).Decode(&get_respuesta)
 	if error_decode_respuesta != nil {
