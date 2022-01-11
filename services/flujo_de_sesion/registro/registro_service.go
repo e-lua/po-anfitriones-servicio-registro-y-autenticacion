@@ -34,6 +34,12 @@ func SignUpNumber_Service(inputcode models.Re_SetGetCode) (int, bool, string, Si
 		return 406, true, "El codigo de pais ingresado no esta incluido en la lista países disponibles de Restoner", phone_and_code
 	}
 
+	//Verificamos que no sea spam
+	quantity, _ := worker_repository.Pg_Find_QtyCodesRegistered(inputcode.PhoneRegister_Key, inputcode.Code)
+	if quantity > 9 {
+		return 406, true, "Este número ha sido bloqueado debido a multiples intentos de ingreso", phone_and_code
+	}
+
 	//Generamos un codigo random
 	//num_alea := rand.Intn(999999-100000) + 100000
 	num_alea := 123456
@@ -58,6 +64,11 @@ func SignUpNumber_Service(inputcode models.Re_SetGetCode) (int, bool, string, Si
 	phoneregister, err_add := code_repository.Re_Set_Phone(inputcode)
 	if err_add != nil {
 		return 500, true, "Error en el servidor interno al intentar registrar el código, detalle: " + err_add.Error(), phone_and_code
+	}
+
+	err_update := worker_repository.Pg_Update_QtyCodesRegistered(phoneregister, inputcode.Code)
+	if err_update != nil {
+		return 500, true, "Error en el servidor interno al intentar actualizar la cantidad de codigos requeridos por este comensal, detalle: " + err_update.Error(), phone_and_code
 	}
 
 	phone_and_code.Phone = phoneregister
