@@ -3,6 +3,7 @@ package registro
 import (
 	"bytes"
 	"encoding/json"
+	"strconv"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -84,9 +85,12 @@ func UpdateWithCode_Service(input_phoneregister int, input models.Re_SetGetCode,
 	var resp PhoneCountryCode
 
 	//Validamos si esta registrado en el modelo Code
-	codigo, _ := code_repository.Re_Get_Phone(input_phoneregister, input_country)
+	codigo, error_r := code_repository.Re_Get_Phone(input_phoneregister, input_country)
+	if error_r != nil {
+		return 500, true, "Error en els ervidor interno al intentar buscar el número, detalles: " + error_r.Error(), resp
+	}
 	if codigo.PhoneRegister_Key < 8 {
-		return 404, true, "Este numero no se encuentra registrado", resp
+		return 404, true, "Este numero no se encuentra registrado, numero: " + strconv.Itoa(codigo.PhoneRegister_Key), resp
 	}
 	if input.Code != codigo.Code {
 		return 403, true, "Codigo inválido", resp
