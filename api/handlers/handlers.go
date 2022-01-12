@@ -36,7 +36,7 @@ func Manejadores() {
 
 	//V1 TO RECOVER
 	router_recover_v1 := version_1.Group("/recover")
-	router_code_v1.PUT("/:phoneRegister/:country", register.RegisterRouter.UpdateWithCodeRecovery)
+	router_code_v1.PUT("/code/:phoneRegister/:country", register.RegisterRouter.UpdateWithCodeRecovery)
 	router_recover_v1.PUT("/password", register.RegisterRouter.UpdatePassword_Recover)
 
 	//V1 TO ANFITRION
