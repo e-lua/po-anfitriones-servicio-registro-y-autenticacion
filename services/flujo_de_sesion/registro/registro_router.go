@@ -71,6 +71,38 @@ func (cr *registerRouter) UpdateCodeWithCode(c echo.Context) error {
 	return c.JSON(status, results)
 }
 
+func (cr *registerRouter) UpdateWithCodeRecovery(c echo.Context) error {
+
+	//Recibimos el id del Business Owner
+	phoneregister := c.Param("phoneRegister")
+	country := c.Param("country")
+
+	//Instanciamos una variable del modelo Code
+	var code models.Re_SetGetCode
+
+	//Agregamos los valores enviados a la variable creada
+	err := c.Bind(&code)
+	if err != nil {
+		results := Response_WithInt{Error: true, DataError: "Se debe enviar el código, revise la estructura o los valores", Data: 0}
+		return c.JSON(400, results)
+	}
+
+	//Validamos los valores enviados
+	if len(phoneregister) < 9 {
+		results := Response_WithInt{Error: true, DataError: "Los valores ingresados no cumplen con la regla de negocio", Data: 0}
+		return c.JSON(400, results)
+	}
+
+	//Convertimos texto a numero
+	numero_registro, _ := strconv.Atoi(phoneregister)
+	country_registro, _ := strconv.Atoi(country)
+
+	//Enviamos los datos al servicio
+	status, boolerror, dataerror, data := UpdateWithCodeRecovery_Service(numero_registro, code, country_registro)
+	results := Response_WithPhoneCountryCode{Error: boolerror, DataError: dataerror, Data: data}
+	return c.JSON(status, results)
+}
+
 func (cr *registerRouter) RegisterAnfitrion(c echo.Context) error {
 
 	//Instanciamos una variable del modelo Code

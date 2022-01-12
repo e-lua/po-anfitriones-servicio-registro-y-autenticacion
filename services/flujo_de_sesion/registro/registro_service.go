@@ -112,6 +112,32 @@ func UpdateWithCode_Service(input_phoneregister int, input models.Re_SetGetCode,
 	return 201, false, "", resp
 }
 
+func UpdateWithCodeRecovery_Service(input_phoneregister int, input models.Re_SetGetCode, input_country int) (int, bool, string, PhoneCountryCode) {
+
+	//Instanciamos la variable del help
+	var resp PhoneCountryCode
+
+	//Validamos si esta registrado en el modelo Code
+	codigo, _ := code_repository.Re_Get_Phone(input_phoneregister, input_country)
+	if codigo.PhoneRegister_Key < 8 {
+		return 404, true, "Este numero no se encuentra registrado", resp
+	}
+	if input.Code != codigo.Code {
+		return 403, true, "Codigo inválido", resp
+	}
+
+	//Validamos si esta registrado en el modelo
+	anfitrion_found, _ := worker_repository.Pg_FindByPhone(input_phoneregister, input_country)
+	if anfitrion_found.IdBusiness < 8 {
+		return 403, true, "Este número no se encuentra registrado", resp
+	}
+
+	resp.Country = input_country
+	resp.Phone = input_phoneregister
+	resp.Code = codigo.Code
+
+	return 201, false, "", resp
+}
 func RegisterAnfitrion_Service(input_anfitrion models.Pg_BusinessWorker) (int, bool, string, string) {
 
 	//Validamos si esta registrado en el modelo Code
