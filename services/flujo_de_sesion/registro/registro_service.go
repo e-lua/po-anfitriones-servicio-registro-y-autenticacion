@@ -98,9 +98,6 @@ func UpdateWithCode_Service(input_phoneregister int, input models.Re_SetGetCode,
 
 	//Validamos si esta registrado en el modelo
 	anfitrion_found, _ := worker_repository.Pg_FindByPhone(input_phoneregister, input_country)
-	if anfitrion_found.IdBusiness < 8 {
-		return 403, true, "Este número no se encuentra registrado", resp
-	}
 	if anfitrion_found.IdBusiness > 8 {
 		return 403, true, "Este número ya se ha registrado", resp
 	}

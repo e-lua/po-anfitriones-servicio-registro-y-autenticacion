@@ -36,16 +36,12 @@ func Manejadores() {
 
 	//V1 TO RECOVER
 	router_recover_v1 := version_1.Group("/recover")
-	router_code_v1.PUT("/code/:phoneRegister/:country", register.RegisterRouter.UpdateWithCodeRecovery)
+	router_recover_v1.PUT("/code/:phoneRegister/:country", register.RegisterRouter.UpdateWithCodeRecovery)
 	router_recover_v1.PUT("/password", register.RegisterRouter.UpdatePassword_Recover)
 
 	//V1 TO ANFITRION
 	router_anfitrion_v1 := version_1.Group("/worker")
 	router_anfitrion_v1.POST("", register.RegisterRouter.RegisterAnfitrion)
-	router_anfitrion_v1.POST("/update/password", profile.ProfileRouter.UpdatePassword)
-	router_anfitrion_v1.POST("/update/name_lastname", profile.ProfileRouter.UpdateNameLastName)
-
-	//V1 TO ENTITY-PROFILE
 	router_anfitrion_v1.PUT("/password", profile.ProfileRouter.UpdatePassword)
 	router_anfitrion_v1.PUT("/profile", profile.ProfileRouter.UpdateNameLastName)
 
