@@ -9,13 +9,18 @@ import (
 
 func Pg_Add(anfitrion_pg models.Pg_BusinessWorker) (int, error) {
 
+	//Tiempo limite al contexto
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	//defer cancelara el contexto
+	defer cancel()
+
 	db := models.Conectar_Pg_DB()
 
 	//Id del worker insertado
 	var id_inserted int
 
 	query := `INSERT INTO BusinessWorker(idcountry,phone,name,lastname,password,updateddate,idrol) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING idworker`
-	inserted := db.QueryRow(context.Background(), query, anfitrion_pg.IdCountry, anfitrion_pg.Phone, anfitrion_pg.Name, anfitrion_pg.LastName, anfitrion_pg.Password, time.Now(), 1)
+	inserted := db.QueryRow(ctx, query, anfitrion_pg.IdCountry, anfitrion_pg.Phone, anfitrion_pg.Name, anfitrion_pg.LastName, anfitrion_pg.Password, time.Now(), 1)
 
 	inserted.Scan(&id_inserted)
 
