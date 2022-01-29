@@ -3,6 +3,7 @@ package registro
 import (
 	"bytes"
 	"encoding/json"
+	"math/rand"
 	"strconv"
 	"time"
 
@@ -26,6 +27,17 @@ func encrypt(input string) (string, error) {
 }
 
 //FUNCIONES PUBLICAS
+
+func AvailableRegister_Service() (int, bool, string, bool) {
+
+	available, err_update := worker_repository.Pg_Find_IfIsAvailable()
+	if err_update != nil {
+		return 500, true, "Error en el servidor interno al intentar actualizar la cantidad de codigos requeridos por este comensal, detalle: " + err_update.Error(), available
+	}
+
+	//Si todo ha ido bien envia un Status 200
+	return 201, false, "", available
+}
 
 func SignUpNumber_Service(inputcode models.Re_SetGetCode) (int, bool, string, SignInFirstStep) {
 
@@ -87,7 +99,7 @@ func UpdateWithCode_Service(input_phoneregister int, input models.Re_SetGetCode,
 	//Validamos si esta registrado en el modelo Code
 	codigo, error_r := code_repository.Re_Get_Phone(input_phoneregister, input_country)
 	if error_r != nil {
-		return 500, true, "Error en els ervidor interno al intentar buscar el número, detalles: " + error_r.Error(), resp
+		return 500, true, "Error en el servidor interno al intentar buscar el número, detalles: " + error_r.Error(), resp
 	}
 	if codigo.PhoneRegister_Key < 8 {
 		return 404, true, "Este numero no se encuentra registrado, numero: " + strconv.Itoa(codigo.PhoneRegister_Key), resp
@@ -99,7 +111,7 @@ func UpdateWithCode_Service(input_phoneregister int, input models.Re_SetGetCode,
 	//Validamos si esta registrado en el modelo
 	anfitrion_found, _ := worker_repository.Pg_FindByPhone(input_phoneregister, input_country)
 	if anfitrion_found.IdBusiness > 8 {
-		return 403, true, "Este número ya se ha registrado", resp
+		return 403, true, "999" + "Este número ya se ha registrado", resp
 	}
 
 	resp.Country = input_country
@@ -153,10 +165,14 @@ func RegisterAnfitrion_Service(input_anfitrion models.Pg_BusinessWorker) (int, b
 		return 403, true, "Este número ya se ha registrado", ""
 	}
 
+	//Creamos un codigo de sesion
+	hour, minute, sec := time.Now().Clock()
+
 	//Encriptar password
 	encrypted_pass, _ := encrypt(input_anfitrion.Password)
 	input_anfitrion.Password = encrypted_pass
 	input_anfitrion.UpdatedDate = time.Now()
+	input_anfitrion.SessionCode = minute*100 + sec + hour + 1111 + rand.Intn(7483647)
 
 	//Enviamos la variable instanciada al repository
 	idworker_business, error_insert_anfitrion := worker_repository.Pg_Add(input_anfitrion)
@@ -169,7 +185,7 @@ func RegisterAnfitrion_Service(input_anfitrion models.Pg_BusinessWorker) (int, b
 	}()
 
 	//Registramos en Redis
-	_, err_add_re := worker_repository.Re_Set_Id(idworker_business, input_anfitrion.IdCountry)
+	_, err_add_re := worker_repository.Re_Set_Id(idworker_business, input_anfitrion.IdCountry, input_anfitrion.SessionCode)
 	if err_add_re != nil {
 		return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), ""
 	}
@@ -219,11 +235,15 @@ func UpdatePassword_Recover_Service(input_entrydata EntryData_Password) (int, bo
 		return 403, true, "Codigo inválido", ""
 	}
 
+	//Creamos un nuevo  codigo de sesion
+	hour, minute, sec := time.Now().Clock()
+	new_session_code := minute*100 + sec + hour + 1111 + rand.Intn(7483647)
+
 	//Encriptar password
 	encrypted_pass, _ := encrypt(input_entrydata.NewPassword)
 
 	//Enviamos la variable instanciada al repository
-	error_update_password := worker_repository.Pg_Update_Password_Recovery(encrypted_pass, input_entrydata.Phone, input_entrydata.Country)
+	error_update_password := worker_repository.Pg_Update_Password_Recovery(encrypted_pass, input_entrydata.Phone, input_entrydata.Country, new_session_code)
 	if error_update_password != nil {
 		return 500, true, "Error interno en el servidor al intentar actualizar la contraseña, detalle: " + error_update_password.Error(), ""
 	}

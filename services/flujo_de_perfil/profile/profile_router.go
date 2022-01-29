@@ -26,6 +26,17 @@ func GetJWT(jwt string) (int, bool, string, int) {
 	return 200, false, "", get_respuesta.Data.IdBusiness
 }
 
+func GetJWTCountry(jwt string) (int, bool, string, int, int) {
+	//Obtenemos los datos del auth
+	respuesta, _ := http.Get("http://localhost:5000/v1/trylogin?jwt=" + jwt)
+	var get_respuesta ResponseJWT
+	error_decode_respuesta := json.NewDecoder(respuesta.Body).Decode(&get_respuesta)
+	if error_decode_respuesta != nil {
+		return 500, true, "Error en el sevidor interno al intentar decodificar la autenticacion, detalles: " + error_decode_respuesta.Error(), 0, 0
+	}
+	return 200, false, "", get_respuesta.Data.IdBusiness, get_respuesta.Data.IdCountry
+}
+
 /*----------------------INICIO DEL ROUTER----------------------*/
 
 func (pr *profileRouter) UpdateNameLastName(c echo.Context) error {
@@ -66,7 +77,7 @@ func (pr *profileRouter) UpdateNameLastName(c echo.Context) error {
 func (pr *profileRouter) UpdatePassword(c echo.Context) error {
 
 	//Obtenemos los datos del auth
-	status, boolerror, dataerror, data_idbusiness := GetJWT(c.Request().Header.Get("Authorization"))
+	status, boolerror, dataerror, data_idbusiness, data_idcountry := GetJWTCountry(c.Request().Header.Get("Authorization"))
 	if dataerror != "" {
 		results := Response_WithString{Error: boolerror, DataError: dataerror, Data: ""}
 		return c.JSON(status, results)
@@ -93,7 +104,7 @@ func (pr *profileRouter) UpdatePassword(c echo.Context) error {
 	}
 
 	//Enviamos los datos al servicio
-	status, boolerror, dataerror, data := UpdatePassword_Service(entrydata, data_idbusiness)
+	status, boolerror, dataerror, data := UpdatePassword_Service(entrydata, data_idbusiness, data_idcountry)
 	results := Response_WithString{Error: boolerror, DataError: dataerror, Data: data}
 	return c.JSON(status, results)
 }

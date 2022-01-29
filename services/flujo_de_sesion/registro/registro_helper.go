@@ -41,3 +41,9 @@ type EntryData_Password struct {
 	Country     int    `json:"country"`
 	Code        int    `json:"code"`
 }
+
+type Response_Available struct {
+	Error     bool   `json:"error"`
+	DataError string `json:"dataError"`
+	Data      bool   `json:"data"`
+}

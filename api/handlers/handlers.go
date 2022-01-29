@@ -25,6 +25,10 @@ func Manejadores() {
 	//VERSION
 	version_1 := e.Group("/v1")
 
+	//V1 TO AVAILABLE REGISTER
+	router_available_v1 := version_1.Group("/available")
+	router_available_v1.GET("", register.RegisterRouter.AvailableRegister)
+
 	//V1 TO LOGIN
 	router_login_v1 := version_1.Group("/login")
 	router_login_v1.POST("", login.Loginrouter.Login)

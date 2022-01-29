@@ -34,7 +34,7 @@ services:
     environment:
       - DATABASE_HOST=127.0.0.1
       - POSTGRES_USER=postgresx
-      - POSTGRES_PASSWORD=postgresx
+      - POSTGRES_PASSWORD=adsfg465WFVFGdsrf3465QWFDSFGH4fsadf4fwedf
       - POSTGRES_DB=postgresx
   pgadmin:
     restart: always
@@ -45,7 +45,7 @@ services:
       - "90:80"
     environment:
       PGADMIN_DEFAULT_EMAIL: adminx@adminx.com
-      PGADMIN_DEFAULT_PASSWORD: adminx
+      PGADMIN_DEFAULT_PASSWORD: dsgojq02934jMG4GG436gdgfG346FD
     depends_on:
       - postgres
   traefik: # apache.app.test - nginx.app.test

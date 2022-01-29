@@ -1,7 +1,6 @@
 package login
 
 import (
-	"errors"
 	"strconv"
 	"time"
 
@@ -35,11 +34,12 @@ func generateJWT(anfitrion models.Pg_BusinessWorker) (string, error) {
 	miClave := []byte("TokenGeneradorRestoner")
 
 	payload := jwt.MapClaims{
-		"business": anfitrion.IdBusiness,
-		"worker":   anfitrion.IdWorker,
-		"rol":      anfitrion.IdRol,
-		"country":  anfitrion.IdCountry,
-		"exp":      time.Now().Add(time.Hour * 1460).Unix(),
+		"business":    anfitrion.IdBusiness,
+		"worker":      anfitrion.IdWorker,
+		"rol":         anfitrion.IdRol,
+		"country":     anfitrion.IdCountry,
+		"sessioncode": anfitrion.SessionCode,
+		"exp":         time.Now().Add(time.Hour * 1460).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
@@ -55,7 +55,7 @@ func generateJWT(anfitrion models.Pg_BusinessWorker) (string, error) {
 
 //FUNCIONES PUBLICAS
 
-func TryingLogin_Service(inpuToken string, inputService string, inputModule string, inputEpic string, inputEndpoint string) (JWTRequest, bool, string, error) {
+func TryingLogin_Service(inpuToken string, inputService string, inputModule string, inputEpic string, inputEndpoint string) (JWTRequest, bool, string, string) {
 
 	//Generador de token
 	miClave := []byte("TokenGeneradorRestoner")
@@ -83,16 +83,19 @@ func TryingLogin_Service(inpuToken string, inputService string, inputModule stri
 	if error_parse == nil {
 
 		//Buscamos la existencia del registro en Pg - Redis
-		_, error_get_re := worker_reposiroty.Re_Get_Id(claims.Business, claims.Country)
+		idbusiness_and_sessioncode, error_get_re := worker_reposiroty.Re_Get_Id(claims.Business, claims.Country)
+		if idbusiness_and_sessioncode != strconv.Itoa(claims.Business)+strconv.Itoa(claims.SessionCode) {
+			return anfitrionjwt, true, "N", "sesion inválida"
+		}
 		if error_get_re != nil {
 			_, error_findworker := worker_reposiroty.Pg_Find_ById(claims.Business, claims.Country)
 			if error_findworker != nil {
-				return anfitrionjwt, true, "N", error_findworker
+				return anfitrionjwt, true, "N", error_findworker.Error()
 			}
 			//Registramos en Redis
-			_, err_add_re := worker_reposiroty.Re_Set_Id(claims.Business, claims.Country)
+			_, err_add_re := worker_reposiroty.Re_Set_Id(claims.Business, claims.Country, claims.SessionCode)
 			if err_add_re != nil {
-				return anfitrionjwt, true, "N", err_add_re
+				return anfitrionjwt, true, "N", err_add_re.Error()
 			}
 		}
 
@@ -105,15 +108,15 @@ func TryingLogin_Service(inpuToken string, inputService string, inputModule stri
 		anfitrionjwt.Epic = inputEpic
 		anfitrionjwt.Endpoint = inputEndpoint
 
-		return anfitrionjwt, false, "N", nil
+		return anfitrionjwt, false, "N", ""
 	}
 
 	//Si el token es inválido
 	if !token.Valid {
-		return anfitrionjwt, true, "N", errors.New("token invalido")
+		return anfitrionjwt, true, "N", "token invalido"
 	}
 
-	return anfitrionjwt, true, "N", error_parse
+	return anfitrionjwt, true, "N", error_parse.Error()
 }
 
 func Login_Service(inputanfitrion models.Pg_BusinessWorker) (int, bool, string, JWTAndRol) {
@@ -127,18 +130,27 @@ func Login_Service(inputanfitrion models.Pg_BusinessWorker) (int, bool, string, 
 		return 500, true, "Error en el servidor interno al intentar buscar el anfitrión, detalle: " + error_findworker.Error(), jwt_and_rol
 	}
 	if strconv.Itoa(worker_found.Phone) == "" {
-		return 404, true, "Este anfitrion no se encuentra registrado", jwt_and_rol
+		return 404, true, "666" + "Este anfitrion no se encuentra registrado", jwt_and_rol
+	}
+	if worker_found.Isbanned {
+		return 404, true, "777" + "Este anfitrión se encuentra baneado", jwt_and_rol
 	}
 
 	//Intentamos el login
 	error_compareToken := compareToken(worker_found.Password, inputanfitrion.Password)
 	if error_compareToken != nil {
-		return 403, true, "Telefono y/o Contraseña incorrectos, detalle: " + error_compareToken.Error(), jwt_and_rol
+		return 403, true, "888" + "Telefono y/o Contraseña incorrectos, detalle: " + error_compareToken.Error(), jwt_and_rol
 	}
 
 	jwtKey, error_generatingJWT := generateJWT(worker_found)
 	if error_generatingJWT != nil {
 		return 500, true, "Error en el servidor interno al intentar generar el token, detalle: " + error_generatingJWT.Error(), jwt_and_rol
+	}
+
+	//Registramos en Redis
+	_, err_add_re := worker_reposiroty.Re_Set_Id(worker_found.IdWorker, worker_found.IdCountry, worker_found.SessionCode)
+	if err_add_re != nil {
+		return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), jwt_and_rol
 	}
 
 	jwt_and_rol.JWT = jwtKey

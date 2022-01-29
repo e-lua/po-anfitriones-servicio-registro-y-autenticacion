@@ -12,5 +12,7 @@ type Pg_BusinessWorker struct {
 	LastName    string    `json:"lastName"`
 	Phone       int       `json:"phone"`
 	Password    string    `json:"password"`
+	Isbanned    bool      `json:"isbanned"`
+	SessionCode int       `json:"sessioncode"`
 	UpdatedDate time.Time `json:"updateDate"`
 }

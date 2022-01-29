@@ -76,9 +76,9 @@ func (lr *loginRouter) TryingLogin(c echo.Context) error {
 	}
 
 	//Enviamos los datos al servicio
-	anfitrionjwt, boolerror, _, _ := TryingLogin_Service(jwt, service, module, epic, endpoint)
+	anfitrionjwt, boolerror, _, error := TryingLogin_Service(jwt, service, module, epic, endpoint)
 
-	results := ResponseJWT{Error: boolerror, DataError: "Null", Data: anfitrionjwt}
+	results := ResponseJWT{Error: boolerror, DataError: "Null" + error, Data: anfitrionjwt}
 	return c.JSON(200, results)
 
 }

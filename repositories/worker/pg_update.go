@@ -75,7 +75,7 @@ func Pg_Update_QtyCodesRegistered(phonenumber int, country int) error {
 	return nil
 }
 
-func Pg_Update_Password_Recovery(password string, phone int, code int) error {
+func Pg_Update_Password_Recovery(password string, phone int, code int, sessioncode int) error {
 
 	//Tiempo limite al contexto
 	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
@@ -84,8 +84,8 @@ func Pg_Update_Password_Recovery(password string, phone int, code int) error {
 
 	db := models.Conectar_Pg_DB()
 
-	query := `UPDATE BusinessWorker SET password=$1,updateddate=$2 WHERE phone=$3 AND idcountry=$4`
-	if _, err_update := db.Exec(ctx, query, password, time.Now(), phone, code); err_update != nil {
+	query := `UPDATE BusinessWorker SET password=$1,updateddate=$2,updatedPassword=$3,sessioncode=$4 WHERE phone=$5 AND idcountry=$6`
+	if _, err_update := db.Exec(ctx, query, password, time.Now(), time.Now(), sessioncode, phone, code); err_update != nil {
 		return err_update
 	}
 

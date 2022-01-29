@@ -14,6 +14,15 @@ var RegisterRouter *registerRouter
 type registerRouter struct {
 }
 
+func (rr *registerRouter) AvailableRegister(c echo.Context) error {
+
+	//Enviamos los datos al servicio
+	status, boolerror, dataerror, data := AvailableRegister_Service()
+	results := Response_Available{Error: boolerror, DataError: dataerror, Data: data}
+	return c.JSON(status, results)
+
+}
+
 func (rr *registerRouter) SignUpNumber(c echo.Context) error {
 
 	//Instanciamos una variable del modelo Code

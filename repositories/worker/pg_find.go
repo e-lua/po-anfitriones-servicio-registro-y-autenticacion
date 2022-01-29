@@ -38,8 +38,8 @@ func Pg_FindByPhone(phone int, idcountry int) (models.Pg_BusinessWorker, error) 
 	var anfitrion models.Pg_BusinessWorker
 
 	db := models.Conectar_Pg_DB()
-	q := `SELECT idbusiness,idworker,idcountry,idrol,phone,password,name,lastname FROM BusinessWorker WHERE phone=$1 AND idcountry=$2 LIMIT 1`
-	error_show := db.QueryRow(ctx, q, phone, idcountry).Scan(&anfitrion.IdBusiness, &anfitrion.IdWorker, &anfitrion.IdCountry, &anfitrion.IdRol, &anfitrion.Phone, &anfitrion.Password, &anfitrion.Name, &anfitrion.LastName)
+	q := `SELECT idbusiness,idworker,idcountry,idrol,phone,password,name,lastname,isbanned,sessioncode FROM BusinessWorker WHERE phone=$1 AND idcountry=$2 LIMIT 1`
+	error_show := db.QueryRow(ctx, q, phone, idcountry).Scan(&anfitrion.IdBusiness, &anfitrion.IdWorker, &anfitrion.IdCountry, &anfitrion.IdRol, &anfitrion.Phone, &anfitrion.Password, &anfitrion.Name, &anfitrion.LastName, &anfitrion.Isbanned, &anfitrion.SessionCode)
 
 	if error_show != nil {
 		return anfitrion, error_show
