@@ -17,6 +17,10 @@ import (
 	//REPOSITORIES
 	code_repository "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/repositories/codes"
 	worker_repository "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/repositories/worker"
+
+	//TWILIO
+	twilio "github.com/twilio/twilio-go"
+	openapi "github.com/twilio/twilio-go/rest/api/v2010"
 )
 
 //FUNCIONES PRIVADAS
@@ -60,18 +64,18 @@ func SignUpNumber_Service(inputcode models.Re_SetGetCode) (int, bool, string, Si
 	inputcode.Code = num_alea
 
 	//Enviamos el codigo al anfitrion
-	/*client := twilio.NewRestClientWithParams(twilio.RestClientParams{
-		Username: "ACaef214e389677f1f21534dd1dd77c609",
-		Password: "95fe92994dbd9d82f2aa47fb9dc94daa",
+	client := twilio.NewRestClientWithParams(twilio.RestClientParams{
+		Username: "ACeb643456bb0e06813948315b95c3aa98",
+		Password: "b6febb18bf85369763c4a303937137d9",
 	})
 	params := &openapi.CreateMessageParams{}
-	params.SetTo("+" + strconv.Itoa(inputcode.PhoneRegister_Key))
-	params.SetFrom("+17244143326")
-	params.SetBody("Codigo de Restoner es: " + strconv.Itoa(num_alea))
+	params.SetTo("+" + strconv.Itoa(inputcode.Country) + strconv.Itoa(inputcode.PhoneRegister_Key))
+	params.SetFrom("+18455793864")
+	params.SetBody("Su codigo de Restoner es: " + strconv.Itoa(num_alea))
 	_, error_sendcode := client.ApiV2010.CreateMessage(params)
 	if error_sendcode != nil {
-		return 500, true, "Error en el servidor interno al intentar enviar el codigo", 0
-	}*/
+		return 500, true, "Error en el servidor interno al intentar enviar el codigo", phone_and_code
+	}
 
 	//Buscamos si el numero ya ha sido registrado en el modelo Code
 	phoneregister, err_add := code_repository.Re_Set_Phone(inputcode)
