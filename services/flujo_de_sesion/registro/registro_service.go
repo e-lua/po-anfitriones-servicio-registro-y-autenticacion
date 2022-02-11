@@ -58,8 +58,7 @@ func SignUpNumber_Service(inputcode models.Re_SetGetCode) (int, bool, string, Si
 	}
 
 	//Generamos un codigo random
-	//num_alea := rand.Intn(999999-100000) + 100000
-	num_alea := 123456
+	num_alea := rand.Intn(999999-100000) + 100000
 	//Asignamos el codigo al modelo Code
 	inputcode.Code = num_alea
 
