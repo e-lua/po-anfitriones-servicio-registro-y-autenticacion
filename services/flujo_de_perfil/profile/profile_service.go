@@ -93,12 +93,6 @@ func UpdatePassword_Service(input_entrydata EntryData_Password, idbusiness int, 
 
 func DeleteAnfitrion_Service(input_idworker int) (int, bool, string, string) {
 
-	//Enviamos la variable instanciada al repository
-	error_update_password := worker_repository.Pg_Update_IsDeleted(input_idworker)
-	if error_update_password != nil {
-		return 500, true, "Error interno en el servidor al intentar eliminar al anfitrion, detalle: " + error_update_password.Error(), ""
-	}
-
 	//Validamos que no se tengan colaboradores asociados
 	_, quantity, error_find_workers := worker_repository.Pg_Find_SubWorkers(input_idworker)
 	if error_find_workers != nil {
@@ -106,6 +100,12 @@ func DeleteAnfitrion_Service(input_idworker int) (int, bool, string, string) {
 	}
 	if quantity > 0 {
 		return 403, true, "No se puede eliminar esta cuenta, ya que cuenta con colaboradores activos", ""
+	}
+
+	//Enviamos la variable instanciada al repository
+	error_update_password := worker_repository.Pg_Update_IsDeleted(input_idworker)
+	if error_update_password != nil {
+		return 500, true, "Error interno en el servidor al intentar eliminar al anfitrion, detalle: " + error_update_password.Error(), ""
 	}
 
 	return 201, false, "", "Eliminado correctamente"

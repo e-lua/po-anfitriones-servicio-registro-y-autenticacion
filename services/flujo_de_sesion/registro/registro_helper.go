@@ -47,3 +47,16 @@ type Response_Available struct {
 	DataError string `json:"dataError"`
 	Data      bool   `json:"data"`
 }
+
+type ResponseJWT struct {
+	Error     bool   `json:"error"`
+	DataError string `json:"dataError"`
+	Data      JWT    `json:"data"`
+}
+
+type JWT struct {
+	IdBusiness int `json:"idBusiness"`
+	IdWorker   int `json:"idWorker"`
+	IdCountry  int `json:"country"`
+	IdRol      int `json:"rol"`
+}

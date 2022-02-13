@@ -1,6 +1,8 @@
 package registro
 
 import (
+	"encoding/json"
+	"net/http"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -13,6 +15,21 @@ var RegisterRouter *registerRouter
 
 type registerRouter struct {
 }
+
+/*----------------------TRAEMOS LOS DATOS DEL AUTENTICADOR----------------------*/
+
+func GetJWTRol(jwt string) (int, bool, string, int) {
+	//Obtenemos los datos del auth
+	respuesta, _ := http.Get("http://localhost:5000/v1/trylogin?jwt=" + jwt)
+	var get_respuesta ResponseJWT
+	error_decode_respuesta := json.NewDecoder(respuesta.Body).Decode(&get_respuesta)
+	if error_decode_respuesta != nil {
+		return 500, true, "Error en el sevidor interno al intentar decodificar la autenticacion, detalles: " + error_decode_respuesta.Error(), 0
+	}
+	return 200, false, "", get_respuesta.Data.IdRol
+}
+
+/*----------------------COMIENZA EL ROUTER----------------------*/
 
 func (rr *registerRouter) AvailableRegister(c echo.Context) error {
 
@@ -161,6 +178,21 @@ func (cr *registerRouter) UpdatePassword_Recover(c echo.Context) error {
 }
 
 func (cr *registerRouter) RegisterColaborador(c echo.Context) error {
+
+	//Obtenemos los datos del auth
+	status, boolerror, dataerror, data_idrol := GetJWTRol(c.Request().Header.Get("Authorization"))
+	if dataerror != "" {
+		results := Response_WithString{Error: boolerror, DataError: dataerror, Data: ""}
+		return c.JSON(status, results)
+	}
+	if data_idrol <= 0 {
+		results := Response_WithString{Error: true, DataError: "Token incorrecto", Data: ""}
+		return c.JSON(400, results)
+	}
+	if data_idrol != 1 {
+		results := Response_WithString{Error: true, DataError: "Este rol no puede crear colaboradores", Data: ""}
+		return c.JSON(403, results)
+	}
 
 	//Instanciamos una variable del modelo Code
 	var anfitrion models.Pg_BusinessWorker
