@@ -91,3 +91,20 @@ func Pg_Update_Password_Recovery(password string, phone int, code int, sessionco
 
 	return nil
 }
+
+func Pg_Update_IsDeleted(idworker int) error {
+
+	//Tiempo limite al contexto
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	//defer cancelara el contexto
+	defer cancel()
+
+	db := models.Conectar_Pg_DB()
+
+	query := `UPDATE BusinessWorker SET isexported=$1,isdeleted=$2,sessioncode=$3 WHERE idworker=$4`
+	if _, err_update := db.Exec(ctx, query, false, true, 123456, idworker); err_update != nil {
+		return err_update
+	}
+
+	return nil
+}

@@ -1,5 +1,7 @@
 package profile
 
+import "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/models"
+
 type Response_WithInt struct {
 	Error     bool   `json:"error"`
 	DataError string `json:"dataError"`
@@ -10,6 +12,12 @@ type Response_WithString struct {
 	Error     bool   `json:"error"`
 	DataError string `json:"dataError"`
 	Data      string `json:"data"`
+}
+
+type Response_SubWorkers struct {
+	Error     bool                  `json:"error"`
+	DataError string                `json:"dataError"`
+	Data      []models.Pg_SubWorker `json:"data"`
 }
 
 type ResponseJWT struct {

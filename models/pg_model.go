@@ -15,4 +15,16 @@ type Pg_BusinessWorker struct {
 	Isbanned    bool      `json:"isbanned"`
 	SessionCode int       `json:"sessioncode"`
 	UpdatedDate time.Time `json:"updateDate"`
+	IsDeleted   bool      `json:"isdeleted"`
+}
+
+type Pg_SubWorker struct {
+	IdWorker       int    `json:"idWorker"`
+	IdBusiness     int    `json:"idBusiness"`
+	IdRol          int    `json:"rol"`
+	Name           string `json:"name"`
+	LastName       string `json:"lastName"`
+	IdCountry      int    `json:"country"`
+	Phone          int    `json:"phone"`
+	DateRegistered string `json:"dateregistered"`
 }

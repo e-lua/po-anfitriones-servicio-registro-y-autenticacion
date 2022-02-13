@@ -129,7 +129,7 @@ func Login_Service(inputanfitrion models.Pg_BusinessWorker) (int, bool, string, 
 	if error_findworker != nil {
 		return 500, true, "Error en el servidor interno al intentar buscar el anfitrión, detalle: " + error_findworker.Error(), jwt_and_rol
 	}
-	if strconv.Itoa(worker_found.Phone) == "" {
+	if strconv.Itoa(worker_found.Phone) == "" || worker_found.IsDeleted {
 		return 404, true, "666" + "Este anfitrion no se encuentra registrado", jwt_and_rol
 	}
 	if worker_found.Isbanned {

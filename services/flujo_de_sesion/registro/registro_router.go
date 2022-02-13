@@ -159,3 +159,27 @@ func (cr *registerRouter) UpdatePassword_Recover(c echo.Context) error {
 	results := Response_WithString{Error: boolerror, DataError: dataerror, Data: data}
 	return c.JSON(status, results)
 }
+
+func (cr *registerRouter) RegisterColaborador(c echo.Context) error {
+
+	//Instanciamos una variable del modelo Code
+	var anfitrion models.Pg_BusinessWorker
+
+	//Agregamos los valores enviados a la variable creada
+	err := c.Bind(&anfitrion)
+	if err != nil {
+		results := Response_WithString{Error: true, DataError: "Se debe enviar los datos del pais, nombre, apellido y contraseña del anfitrion, revise la estructura o los valores", Data: ""}
+		return c.JSON(400, results)
+	}
+
+	//Validamos los valores enviados
+	if anfitrion.Phone < 999999 || len(anfitrion.Password) < 8 || len(anfitrion.Name) < 1 || len(anfitrion.LastName) < 1 || anfitrion.IdCountry != 51 && anfitrion.IdCountry != 52 {
+		results := Response_WithString{Error: true, DataError: "El valor ingresado no cumple con la regla de negocio", Data: ""}
+		return c.JSON(400, results)
+	}
+
+	//Enviamos los datos al servicio
+	status, boolerror, dataerror, data := RegisterColaborador_Service(anfitrion)
+	results := Response_WithString{Error: boolerror, DataError: dataerror, Data: data}
+	return c.JSON(status, results)
+}

@@ -48,6 +48,13 @@ func Manejadores() {
 	router_anfitrion_v1.POST("", register.RegisterRouter.RegisterAnfitrion)
 	router_anfitrion_v1.PUT("/password", profile.ProfileRouter.UpdatePassword)
 	router_anfitrion_v1.PUT("/profile", profile.ProfileRouter.UpdateNameLastName)
+	router_anfitrion_v1.DELETE("", profile.ProfileRouter.DeleteAnfitrion)
+
+	//V1 TO COLABORADOR
+	router_colaborador_v1 := version_1.Group("/subworker")
+	router_colaborador_v1.POST("", register.RegisterRouter.RegisterColaborador)
+	router_colaborador_v1.GET("", profile.ProfileRouter.GetColaborador)
+	router_colaborador_v1.DELETE("", profile.ProfileRouter.DeleteColaborador)
 
 	//V1 TO TRYLOGIN
 	router_login := version_1.Group("/trylogin")

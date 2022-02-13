@@ -113,7 +113,7 @@ func UpdateWithCode_Service(input_phoneregister int, input models.Re_SetGetCode,
 
 	//Validamos si esta registrado en el modelo
 	anfitrion_found, _ := worker_repository.Pg_FindByPhone(input_phoneregister, input_country)
-	if anfitrion_found.IdBusiness > 8 {
+	if anfitrion_found.IdBusiness > 8 && !anfitrion_found.IsDeleted {
 		return 403, true, "999" + "Este número ya se ha registrado", resp
 	}
 
@@ -140,7 +140,7 @@ func UpdateWithCodeRecovery_Service(input_phoneregister int, input models.Re_Set
 
 	//Validamos si esta registrado en el modelo
 	anfitrion_found, _ := worker_repository.Pg_FindByPhone(input_phoneregister, input_country)
-	if anfitrion_found.IdBusiness < 8 {
+	if anfitrion_found.IdBusiness < 8 && anfitrion_found.IsDeleted {
 		return 403, true, "Este número no se encuentra registrado", resp
 	}
 
@@ -150,6 +150,7 @@ func UpdateWithCodeRecovery_Service(input_phoneregister int, input models.Re_Set
 
 	return 201, false, "", resp
 }
+
 func RegisterAnfitrion_Service(input_anfitrion models.Pg_BusinessWorker) (int, bool, string, string) {
 
 	//Validamos si esta registrado en el modelo Code
@@ -164,7 +165,7 @@ func RegisterAnfitrion_Service(input_anfitrion models.Pg_BusinessWorker) (int, b
 	//Validamos si esta registrado en el modelo
 	anfitrion_found, _ := worker_repository.Pg_FindByPhone(input_anfitrion.Phone, input_anfitrion.IdCountry)
 
-	if anfitrion_found.Phone > 2 {
+	if anfitrion_found.Phone > 2 && !anfitrion_found.IsDeleted {
 		return 403, true, "Este número ya se ha registrado", ""
 	}
 
@@ -252,6 +253,48 @@ func UpdatePassword_Recover_Service(input_entrydata EntryData_Password) (int, bo
 	}
 
 	return 201, false, "", "Contraseña actualizada correctamente"
+}
+
+func RegisterColaborador_Service(input_anfitrion models.Pg_BusinessWorker) (int, bool, string, string) {
+
+	//Validamos si esta registrado en el modelo Code
+	codigo, _ := code_repository.Re_Get_Phone(input_anfitrion.Phone, input_anfitrion.IdCountry)
+	if codigo.PhoneRegister_Key < 6 {
+		return 404, true, "Este numero no se encuentra registrado", ""
+	}
+	if input_anfitrion.CodeRedis != codigo.Code {
+		return 403, true, "Codigo inválido", ""
+	}
+
+	//Validamos si esta registrado en el modelo
+	anfitrion_found, _ := worker_repository.Pg_FindByPhone(input_anfitrion.Phone, input_anfitrion.IdCountry)
+
+	if anfitrion_found.Phone > 2 && !anfitrion_found.IsDeleted {
+		return 403, true, "Este número ya se ha registrado", ""
+	}
+
+	//Creamos un codigo de sesion
+	hour, minute, sec := time.Now().Clock()
+
+	//Encriptar password
+	encrypted_pass, _ := encrypt(input_anfitrion.Password)
+	input_anfitrion.Password = encrypted_pass
+	input_anfitrion.UpdatedDate = time.Now()
+	input_anfitrion.SessionCode = minute*100 + sec + hour + 1111 + rand.Intn(7483647)
+
+	//Enviamos la variable instanciada al repository
+	idworker_business, error_insert_anfitrion := worker_repository.Pg_Add(input_anfitrion)
+	if error_insert_anfitrion != nil {
+		return 500, true, "Error interno en el servidor al intentar registrar al anfitrion, detalle: " + error_insert_anfitrion.Error(), ""
+	}
+
+	//Registramos en Redis
+	_, err_add_re := worker_repository.Re_Set_Id(idworker_business, input_anfitrion.IdCountry, input_anfitrion.SessionCode)
+	if err_add_re != nil {
+		return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), ""
+	}
+
+	return 201, false, "", "Registro exitoso"
 }
 
 //SERIALIZADORA
