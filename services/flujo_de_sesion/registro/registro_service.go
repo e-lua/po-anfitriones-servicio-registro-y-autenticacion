@@ -255,7 +255,7 @@ func UpdatePassword_Recover_Service(input_entrydata EntryData_Password) (int, bo
 	return 201, false, "", "Contraseña actualizada correctamente"
 }
 
-func RegisterColaborador_Service(input_anfitrion models.Pg_BusinessWorker) (int, bool, string, string) {
+func RegisterColaborador_Service(data_idbusiness int, input_anfitrion models.Pg_BusinessWorker) (int, bool, string, string) {
 
 	//Validamos si esta registrado en el modelo Code
 	codigo, _ := code_repository.Re_Get_Phone(input_anfitrion.Phone, input_anfitrion.IdCountry)
@@ -281,15 +281,16 @@ func RegisterColaborador_Service(input_anfitrion models.Pg_BusinessWorker) (int,
 	input_anfitrion.Password = encrypted_pass
 	input_anfitrion.UpdatedDate = time.Now()
 	input_anfitrion.SessionCode = minute*100 + sec + hour + 1111 + rand.Intn(7483647)
+	input_anfitrion.IdBusiness = data_idbusiness
 
 	//Enviamos la variable instanciada al repository
-	idworker_business, error_insert_anfitrion := worker_repository.Pg_Add(input_anfitrion)
+	idsubworker, error_insert_anfitrion := worker_repository.Pg_Add_Subworker(input_anfitrion)
 	if error_insert_anfitrion != nil {
-		return 500, true, "Error interno en el servidor al intentar registrar al anfitrion, detalle: " + error_insert_anfitrion.Error(), ""
+		return 500, true, "Error interno en el servidor al intentar registrar al colaborador, detalle: " + error_insert_anfitrion.Error(), ""
 	}
 
 	//Registramos en Redis
-	_, err_add_re := worker_repository.Re_Set_Id(idworker_business, input_anfitrion.IdCountry, input_anfitrion.SessionCode)
+	_, err_add_re := worker_repository.Re_Set_Id(idsubworker, input_anfitrion.IdCountry, input_anfitrion.SessionCode)
 	if err_add_re != nil {
 		return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), ""
 	}

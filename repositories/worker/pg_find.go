@@ -101,7 +101,7 @@ func Pg_Find_SubWorkers(idbusiness int) ([]models.Pg_SubWorker, int, error) {
 	quantity := 0
 
 	db := models.Conectar_Pg_DB()
-	q := "SELECT idworker,idbusiness,name,lastname,idcountry,phone,TO_CHAR(createddate, 'dd Mon, yyyy HH12:MI AM') FROM businessworker WHERE isdeleted=true AND idrol=2 AND idbusiness=$1"
+	q := "SELECT idworker,idbusiness,name,lastname,idcountry,phone,TO_CHAR(createddate, 'dd Mon, yyyy HH12:MI AM') FROM businessworker WHERE isdeleted=false AND idrol=2 AND idbusiness=$1"
 	rows, error_query := db.Query(ctx, q, idbusiness)
 
 	//Instanciamos una variable del modelo Pg_SubWorker
