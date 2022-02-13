@@ -3,6 +3,7 @@ package profile
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 	//MDOELS
@@ -167,19 +168,11 @@ func (pr *profileRouter) DeleteColaborador(c echo.Context) error {
 		return c.JSON(403, results)
 	}
 
-	//Obtenemos los datos del auth
-	status, boolerror, dataerror, data_idsubworker := GetJWTSubWorker(c.Request().Header.Get("Authorization"))
-	if dataerror != "" {
-		results := Response_WithString{Error: boolerror, DataError: dataerror, Data: ""}
-		return c.JSON(status, results)
-	}
-	if data_idsubworker <= 0 {
-		results := Response_WithString{Error: true, DataError: "Token incorrecto", Data: ""}
-		return c.JSON(400, results)
-	}
+	idsubworker := c.Param("idsubworker")
+	idsubworker_int, _ := strconv.Atoi(idsubworker)
 
 	//Enviamos los datos al servicio
-	status, boolerror, dataerror, data := DeleteColaborador_Service(data_idsubworker)
+	status, boolerror, dataerror, data := DeleteColaborador_Service(idsubworker_int)
 	results := Response_WithString{Error: boolerror, DataError: dataerror, Data: data}
 	return c.JSON(status, results)
 }
