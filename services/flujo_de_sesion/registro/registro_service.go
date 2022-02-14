@@ -189,7 +189,7 @@ func RegisterAnfitrion_Service(input_anfitrion models.Pg_BusinessWorker) (int, b
 	}()
 
 	//Registramos en Redis
-	_, err_add_re := worker_repository.Re_Set_Id(idworker_business, input_anfitrion.IdCountry, input_anfitrion.SessionCode)
+	_, err_add_re := worker_repository.Re_Set_Id(idworker_business, input_anfitrion.IdCountry, input_anfitrion.SessionCode, input_anfitrion.Phone)
 	if err_add_re != nil {
 		return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), ""
 	}
@@ -290,7 +290,7 @@ func RegisterColaborador_Service(data_idbusiness int, input_anfitrion models.Pg_
 	}
 
 	//Registramos en Redis
-	_, err_add_re := worker_repository.Re_Set_Id(idsubworker, input_anfitrion.IdCountry, input_anfitrion.SessionCode)
+	_, err_add_re := worker_repository.Re_Set_Id(idsubworker, input_anfitrion.IdCountry, input_anfitrion.SessionCode, input_anfitrion.Phone)
 	if err_add_re != nil {
 		return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), ""
 	}

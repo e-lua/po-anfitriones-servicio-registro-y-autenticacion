@@ -83,7 +83,7 @@ func TryingLogin_Service(inpuToken string, inputService string, inputModule stri
 	if error_parse == nil {
 
 		//Buscamos la existencia del registro en Pg - Redis
-		idbusiness_and_sessioncode, error_get_re := worker_reposiroty.Re_Get_Id(claims.Business, claims.Country)
+		idbusiness_and_sessioncode, error_get_re := worker_reposiroty.Re_Get_Id(claims.Business, claims.Country, claims.Phone)
 		if idbusiness_and_sessioncode != strconv.Itoa(claims.Business)+strconv.Itoa(claims.SessionCode) {
 			return anfitrionjwt, true, "N", "sesion inválida"
 		}
@@ -93,7 +93,7 @@ func TryingLogin_Service(inpuToken string, inputService string, inputModule stri
 				return anfitrionjwt, true, "N", error_findworker.Error()
 			}
 			//Registramos en Redis
-			_, err_add_re := worker_reposiroty.Re_Set_Id(claims.Business, claims.Country, claims.SessionCode)
+			_, err_add_re := worker_reposiroty.Re_Set_Id(claims.Business, claims.Country, claims.SessionCode, claims.Phone)
 			if err_add_re != nil {
 				return anfitrionjwt, true, "N", err_add_re.Error()
 			}
@@ -148,7 +148,7 @@ func Login_Service(inputanfitrion models.Pg_BusinessWorker) (int, bool, string, 
 	}
 
 	//Registramos en Redis
-	_, err_add_re := worker_reposiroty.Re_Set_Id(worker_found.IdWorker, worker_found.IdCountry, worker_found.SessionCode)
+	_, err_add_re := worker_reposiroty.Re_Set_Id(worker_found.IdWorker, worker_found.IdCountry, worker_found.SessionCode, worker_found.Phone)
 	if err_add_re != nil {
 		return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), jwt_and_rol
 	}

@@ -48,7 +48,7 @@ func Pg_FindByPhone(phone int, idcountry int) (models.Pg_BusinessWorker, error) 
 	return anfitrion, nil
 }
 
-func Pg_FindPassword_ById(idbusiness int) (string, error) {
+func Pg_FindPassword_ById(idbusiness int) (string, int, error) {
 
 	//Tiempo limite al contexto
 	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
@@ -56,17 +56,18 @@ func Pg_FindPassword_ById(idbusiness int) (string, error) {
 	defer cancel()
 
 	var pass string
+	var phone int
 
 	db := models.Conectar_Pg_DB()
-	q := "SELECT password FROM BusinessWorker WHERE idbusiness=$1"
-	error_showname := db.QueryRow(ctx, q, idbusiness).Scan(&pass)
+	q := "SELECT password,phone FROM BusinessWorker WHERE idbusiness=$1"
+	error_showname := db.QueryRow(ctx, q, idbusiness).Scan(&pass, &phone)
 
 	if error_showname != nil {
-		return pass, error_showname
+		return pass, phone, error_showname
 	}
 
 	//Si todo esta bien
-	return pass, nil
+	return pass, phone, nil
 
 }
 
