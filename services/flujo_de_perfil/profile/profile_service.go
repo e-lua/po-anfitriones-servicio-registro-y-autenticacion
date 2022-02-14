@@ -114,7 +114,7 @@ func DeleteAnfitrion_Service(input_idworker int) (int, bool, string, string) {
 func DeleteColaborador_Service(input_idsubworker int) (int, bool, string, string) {
 
 	//Enviamos la variable instanciada al repository
-	error_update_password := worker_repository.Pg_Update_IsDeleted(input_idsubworker)
+	error_update_password := worker_repository.Pg_Delete_SubWorker(input_idsubworker)
 	if error_update_password != nil {
 		return 500, true, "Error interno en el servidor al intentar eliminar al anfitrion, detalle: " + error_update_password.Error(), ""
 	}

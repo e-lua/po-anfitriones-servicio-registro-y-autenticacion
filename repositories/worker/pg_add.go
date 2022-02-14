@@ -19,8 +19,8 @@ func Pg_Add(anfitrion_pg models.Pg_BusinessWorker) (int, error) {
 	//Id del worker insertado
 	var id_inserted int
 
-	query := `INSERT INTO BusinessWorker(idcountry,phone,name,lastname,password,updateddate,idrol) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING idworker`
-	inserted := db.QueryRow(ctx, query, anfitrion_pg.IdCountry, anfitrion_pg.Phone, anfitrion_pg.Name, anfitrion_pg.LastName, anfitrion_pg.Password, time.Now(), 1)
+	query := `INSERT INTO BusinessWorker(idcountry,phone,name,lastname,password,updateddate,idrol,sessioncode) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING idworker`
+	inserted := db.QueryRow(ctx, query, anfitrion_pg.IdCountry, anfitrion_pg.Phone, anfitrion_pg.Name, anfitrion_pg.LastName, anfitrion_pg.Password, time.Now(), 1, anfitrion_pg.SessionCode)
 
 	inserted.Scan(&id_inserted)
 
@@ -39,8 +39,8 @@ func Pg_Add_Subworker(anfitrion_pg models.Pg_BusinessWorker) (int, error) {
 
 	db := models.Conectar_Pg_DB()
 
-	query := `INSERT INTO BusinessWorker(idcountry,phone,name,lastname,password,updateddate,idrol,idbusiness) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING idworker`
-	inserted := db.QueryRow(ctx, query, anfitrion_pg.IdCountry, anfitrion_pg.Phone, anfitrion_pg.Name, anfitrion_pg.LastName, anfitrion_pg.Password, time.Now(), 2, anfitrion_pg.IdBusiness)
+	query := `INSERT INTO BusinessWorker(idcountry,phone,name,lastname,password,updateddate,idrol,idbusiness,sessioncode) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING idworker`
+	inserted := db.QueryRow(ctx, query, anfitrion_pg.IdCountry, anfitrion_pg.Phone, anfitrion_pg.Name, anfitrion_pg.LastName, anfitrion_pg.Password, time.Now(), 2, anfitrion_pg.IdBusiness, anfitrion_pg.SessionCode)
 
 	inserted.Scan(&id_inserted)
 
