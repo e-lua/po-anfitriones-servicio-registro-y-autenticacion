@@ -56,18 +56,18 @@ func Pg_FindPassword_ById(idbusiness int) (string, int, error) {
 	defer cancel()
 
 	var pass string
-	var phone int
+	var idworker int
 
 	db := models.Conectar_Pg_DB()
-	q := "SELECT password,phone FROM BusinessWorker WHERE idbusiness=$1"
-	error_showname := db.QueryRow(ctx, q, idbusiness).Scan(&pass, &phone)
+	q := "SELECT password,idworker FROM BusinessWorker WHERE idbusiness=$1"
+	error_showname := db.QueryRow(ctx, q, idbusiness).Scan(&pass, &idworker)
 
 	if error_showname != nil {
-		return pass, phone, error_showname
+		return pass, idworker, error_showname
 	}
 
 	//Si todo esta bien
-	return pass, phone, nil
+	return pass, idworker, nil
 
 }
 

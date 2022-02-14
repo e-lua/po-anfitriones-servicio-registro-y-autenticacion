@@ -55,7 +55,7 @@ func UpdateNameLastName_Service(input_business Entry_Profile, input_idworker int
 func UpdatePassword_Service(input_entrydata EntryData_Password, idbusiness int, idcountry int) (int, bool, string, string) {
 
 	//Buscamos la existencia del registro en Pg
-	pass, phone, error_findcomensal := worker_repository.Pg_FindPassword_ById(idbusiness)
+	pass, idworker, error_findcomensal := worker_repository.Pg_FindPassword_ById(idbusiness)
 	if error_findcomensal != nil {
 		return 500, true, "Error en el servidor interno al intentar buscar el comensal, detalle: " + error_findcomensal.Error(), ""
 	}
@@ -83,7 +83,7 @@ func UpdatePassword_Service(input_entrydata EntryData_Password, idbusiness int, 
 	}
 
 	//Registramos en Redis
-	_, err_add_re := worker_repository.Re_Set_Id(idbusiness, idcountry, new_session_code, phone)
+	_, err_add_re := worker_repository.Re_Set_ID(idworker, idcountry, new_session_code, idbusiness)
 	if err_add_re != nil {
 		return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), ""
 	}
