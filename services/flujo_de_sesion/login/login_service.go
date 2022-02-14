@@ -84,7 +84,7 @@ func TryingLogin_Service(inpuToken string, inputService string, inputModule stri
 
 		//Buscamos la existencia del registro en Pg - Redis
 		idbusiness_and_sessioncode, error_get_re := worker_reposiroty.Re_Get_Id(claims.Business, claims.Country, claims.Phone)
-		if idbusiness_and_sessioncode != strconv.Itoa(claims.Business)+strconv.Itoa(claims.SessionCode) {
+		if idbusiness_and_sessioncode != strconv.Itoa(claims.Business)+strconv.Itoa(claims.SessionCode)+strconv.Itoa(claims.Country)+strconv.Itoa(claims.Phone) {
 			return anfitrionjwt, true, "N", "sesion inválida"
 		}
 		if error_get_re != nil {
