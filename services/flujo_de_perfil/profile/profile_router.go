@@ -210,3 +210,14 @@ func (pr *profileRouter) GetColaborador(c echo.Context) error {
 	results := Response_SubWorkers{Error: boolerror, DataError: dataerror, Data: data}
 	return c.JSON(status, results)
 }
+
+func (pr *profileRouter) GetColaboradorToExport(c echo.Context) error {
+
+	idsubworker := c.Param("idsubworker")
+	idsubworker_int, _ := strconv.Atoi(idsubworker)
+
+	//Enviamos los datos al servicio
+	status, boolerror, dataerror, data := GetColaboradorToExport_Service(idsubworker_int)
+	results := Response_SubWorker_ToExport{Error: boolerror, DataError: dataerror, Data: data}
+	return c.JSON(status, results)
+}

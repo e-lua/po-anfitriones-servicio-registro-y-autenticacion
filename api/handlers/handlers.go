@@ -56,6 +56,10 @@ func Manejadores() {
 	router_colaborador_v1.GET("", profile.ProfileRouter.GetColaborador)
 	router_colaborador_v1.DELETE("/:idsubworker", profile.ProfileRouter.DeleteColaborador)
 
+	//V1 TO COLABORADOR A EXPORTAR
+	router_colaborador_to_export_v1 := version_1.Group("/subworkertoexport")
+	router_colaborador_to_export_v1.GET("/:idsubworker", profile.ProfileRouter.GetColaboradorToExport)
+
 	//V1 TO TRYLOGIN
 	router_login := version_1.Group("/trylogin")
 	router_login.GET("", login.Loginrouter.TryingLogin)

@@ -121,3 +121,23 @@ func Pg_Find_SubWorkers(idbusiness int) ([]models.Pg_SubWorker, int, error) {
 
 	return oListSubWorker, quantity, nil
 }
+
+func Pg_Find_SubWorkers_ToWorker(idworker int) (models.Pg_SubWorker, error) {
+
+	//Tiempo limite al contexto
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	//defer cancelara el contexto
+	defer cancel()
+
+	var subworker_pg models.Pg_SubWorker
+
+	db := models.Conectar_Pg_DB()
+	q := "SELECT idworker,idbusiness,name,lastname,idcountry,phone,TO_CHAR(createddate, 'dd Mon, yyyy HH12:MI AM') FROM businessworker WHERE idworker=$1"
+	error_query := db.QueryRow(ctx, q, idworker).Scan(&subworker_pg.IdWorker, &subworker_pg.IdBusiness, &subworker_pg.Name, &subworker_pg.LastName, &subworker_pg.IdCountry, &subworker_pg.Phone, &subworker_pg.DateRegistered)
+
+	if error_query != nil {
+		return subworker_pg, error_query
+	}
+
+	return subworker_pg, nil
+}

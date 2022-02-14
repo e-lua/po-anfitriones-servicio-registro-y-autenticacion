@@ -20,6 +20,12 @@ type Response_SubWorkers struct {
 	Data      []models.Pg_SubWorker `json:"data"`
 }
 
+type Response_SubWorker_ToExport struct {
+	Error     bool                `json:"error"`
+	DataError string              `json:"dataError"`
+	Data      models.Pg_SubWorker `json:"data"`
+}
+
 type ResponseJWT struct {
 	Error     bool   `json:"error"`
 	DataError string `json:"dataError"`
