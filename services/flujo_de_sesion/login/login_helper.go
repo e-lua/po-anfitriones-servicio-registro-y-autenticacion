@@ -45,4 +45,5 @@ type JWTAndRol struct {
 	Country  int    `json:"country"`
 	Name     string `json:"name"`
 	Lastname string `json:"lastname"`
+	ID       int    `json:"id"`
 }
