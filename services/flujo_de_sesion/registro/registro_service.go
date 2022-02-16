@@ -257,6 +257,12 @@ func UpdatePassword_Recover_Service(input_entrydata EntryData_Password) (int, bo
 
 func RegisterColaborador_Service(data_idbusiness int, input_anfitrion models.Pg_BusinessWorker) (int, bool, string, string) {
 
+	//Validamos la cantidad de Colaboradores
+	_, quantity_subworkers, _ := worker_repository.Pg_Find_Qty_SubWorkers(data_idbusiness)
+	if quantity_subworkers > 2 {
+		return 404, true, "Solo se puede registrar como máximo 2 colaboradores", ""
+	}
+
 	//Validamos si esta registrado en el modelo Code
 	codigo, _ := code_repository.Re_Get_Phone(input_anfitrion.Phone, input_anfitrion.IdCountry)
 	if codigo.PhoneRegister_Key < 6 {

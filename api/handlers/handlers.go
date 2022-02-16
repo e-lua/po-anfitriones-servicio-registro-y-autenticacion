@@ -22,6 +22,11 @@ func Manejadores() {
 	e.Use(middleware.Recover())
 
 	e.GET("/", index)
+
+	/*=======================================*/
+	/*===============VERSION 1===============*/
+	/*=======================================*/
+
 	//VERSION
 	version_1 := e.Group("/v1")
 
@@ -63,6 +68,21 @@ func Manejadores() {
 	//V1 TO TRYLOGIN
 	router_login := version_1.Group("/trylogin")
 	router_login.GET("", login.Loginrouter.TryingLogin)
+
+	/*=======================================*/
+	/*===============VERSION 2===============*/
+	/*=======================================*/
+
+	//VERSION
+	//version_2 := e.Group("/v2")
+
+	//V2 TO LOGIN
+	//router_login_v2 := version_2.Group("/login")
+	//router_login_v2.POST("", login.Loginrouter.Login)
+
+	/*=======================================*/
+	/*=======ADDITONAL CONFIGURATIONS========*/
+	/*=======================================*/
 
 	//Abrimos el puerto
 	PORT := os.Getenv("PORT")
