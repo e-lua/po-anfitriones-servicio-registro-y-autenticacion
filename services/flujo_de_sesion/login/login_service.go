@@ -240,7 +240,7 @@ func V2_Login_Service(input_login Input_BusinessWorker_login) (int, bool, string
 		if error_findsubworker != nil {
 			return 500, true, "Error en el servidor interno al intentar buscar el colaborador, detalle: " + error_findsubworker.Error(), jwt_and_rol
 		}
-		if strconv.Itoa(subworker_found.Phone) == "" || subworker_found.IsDeleted {
+		if len(subworker_found.Email) < 2 || subworker_found.IsDeleted {
 			return 404, true, "666" + "Este anfitrion no se encuentra registrado", jwt_and_rol
 		}
 		if subworker_found.Isbanned {
