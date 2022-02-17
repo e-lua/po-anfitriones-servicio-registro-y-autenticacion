@@ -190,7 +190,7 @@ func V2_Pg_Find_SubWorkers(idbusiness int) ([]models.V2_Pg_SubWorker, int, error
 	quantity := 0
 
 	db := models.Conectar_Pg_DB()
-	q := "SELECT idworker,idbusiness,name,lastname,email FROM businessworker WHERE isdeleted=false AND idrol=2 AND idbusiness=$1"
+	q := "SELECT idworker,idbusiness,name,lastname,email,idrol FROM businessworker WHERE isdeleted=false AND idrol=2 AND idbusiness=$1"
 	rows, error_query := db.Query(ctx, q, idbusiness)
 
 	//Instanciamos una variable del modelo Pg_SubWorker
@@ -203,7 +203,7 @@ func V2_Pg_Find_SubWorkers(idbusiness int) ([]models.V2_Pg_SubWorker, int, error
 	//Scaneamos l resultado y lo asignamos a la variable instanciada
 	for rows.Next() {
 		subworker_pg := models.V2_Pg_SubWorker{}
-		rows.Scan(&subworker_pg.IdWorker, &subworker_pg.IdBusiness, &subworker_pg.Name, &subworker_pg.LastName, &subworker_pg.Email)
+		rows.Scan(&subworker_pg.IdWorker, &subworker_pg.IdBusiness, &subworker_pg.Name, &subworker_pg.LastName, &subworker_pg.Email, &subworker_pg.IdRol)
 		oListSubWorker = append(oListSubWorker, subworker_pg)
 		quantity = quantity + 1
 	}

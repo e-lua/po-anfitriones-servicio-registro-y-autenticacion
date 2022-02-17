@@ -321,12 +321,6 @@ func serialize(anfitrion models.Pg_BusinessWorker) ([]byte, error) {
 
 func V2_RegisterColaborador_Service(data_idbusiness int, input_anfitrion models.Pg_BusinessWorker, data_country int) (int, bool, string, string) {
 
-	//Validamos la cantidad de Colaboradores
-	_, quantity_subworkers, _ := worker_repository.Pg_Find_Qty_SubWorkers(data_idbusiness)
-	if quantity_subworkers > 13 {
-		return 404, true, "Solo se puede registrar como máximo 2 colaboradores", ""
-	}
-
 	//Validamos si esta registrado en el modelo
 	anfitrion_found, _ := worker_repository.Pg_FindByEmail(input_anfitrion.Email)
 	if len(anfitrion_found.Email) > 2 {
