@@ -143,3 +143,18 @@ func GetColaboradorToExport_Service(input_idsubworker int) (int, bool, string, m
 
 	return 201, false, "", subworker
 }
+
+/*=======================================*/
+/*===============VERSION 2===============*/
+/*=======================================*/
+
+func V2_GetColaborador_Service(input_idbusiness int) (int, bool, string, []models.V2_Pg_SubWorker) {
+
+	//Enviamos la variable instanciada al repository
+	subworkers, _, error_update_password := worker_repository.V2_Pg_Find_SubWorkers(input_idbusiness)
+	if error_update_password != nil {
+		return 500, true, "Error interno en el servidor al intentar eliminar al anfitrion, detalle: " + error_update_password.Error(), subworkers
+	}
+
+	return 201, false, "", subworkers
+}

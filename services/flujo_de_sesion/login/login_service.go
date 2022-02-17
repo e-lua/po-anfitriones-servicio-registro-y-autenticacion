@@ -82,20 +82,43 @@ func TryingLogin_Service(inpuToken string, inputService string, inputModule stri
 
 	if error_parse == nil {
 
-		//Buscamos la existencia del registro en Pg - Redis
-		idbusiness_and_sessioncode, error_get_re := worker_reposiroty.Re_Get_Id(claims.Worker, claims.Country, claims.Business)
-		if idbusiness_and_sessioncode != strconv.Itoa(claims.Worker)+strconv.Itoa(claims.SessionCode)+strconv.Itoa(claims.Business) {
-			return anfitrionjwt, true, "N", "sesion inválida"
-		}
-		if error_get_re != nil {
-			_, error_findworker := worker_reposiroty.Pg_Find_ById(claims.Business, claims.Country)
-			if error_findworker != nil {
-				return anfitrionjwt, true, "N", error_findworker.Error()
+		if claims.IDRol == 1 {
+			//Buscamos la existencia del registro en Pg - Redis
+			idbusiness_and_sessioncode, error_get_re := worker_reposiroty.Re_Get_Id(claims.Worker, claims.Country, claims.Business)
+			if idbusiness_and_sessioncode != strconv.Itoa(claims.Worker)+strconv.Itoa(claims.SessionCode)+strconv.Itoa(claims.Business) {
+				return anfitrionjwt, true, "N", "sesion inválida"
 			}
-			//Registramos en Redis
-			_, err_add_re := worker_reposiroty.Re_Set_ID(claims.Worker, claims.Country, claims.SessionCode, claims.Business)
-			if err_add_re != nil {
-				return anfitrionjwt, true, "N", err_add_re.Error()
+
+			if error_get_re != nil {
+				_, error_findworker := worker_reposiroty.Pg_Find_ById(claims.Business, claims.Country)
+				if error_findworker != nil {
+					return anfitrionjwt, true, "N", error_findworker.Error()
+				}
+				//Registramos en Redis
+				_, err_add_re := worker_reposiroty.Re_Set_ID(claims.Worker, claims.Country, claims.SessionCode, claims.Business)
+				if err_add_re != nil {
+					return anfitrionjwt, true, "N", err_add_re.Error()
+				}
+			}
+		}
+
+		if claims.IDRol == 2 {
+			//Buscamos la existencia del registro en Pg - Redis
+			idbusiness_and_sessioncode, error_get_re := worker_reposiroty.Re_Get_Email(claims.Worker, claims.SessionCode, 2)
+			if idbusiness_and_sessioncode != strconv.Itoa(claims.Worker)+strconv.Itoa(claims.SessionCode)+strconv.Itoa(2) {
+				return anfitrionjwt, true, "N", "sesion inválida"
+			}
+
+			if error_get_re != nil {
+				_, error_findworker := worker_reposiroty.Pg_Find_ById(claims.Business, claims.Country)
+				if error_findworker != nil {
+					return anfitrionjwt, true, "N", error_findworker.Error()
+				}
+				//Registramos en Redis
+				_, err_add_re := worker_reposiroty.Re_Set_ID(claims.Worker, claims.Country, claims.SessionCode, claims.Business)
+				if err_add_re != nil {
+					return anfitrionjwt, true, "N", err_add_re.Error()
+				}
 			}
 		}
 
@@ -160,6 +183,74 @@ func Login_Service(inputanfitrion models.Pg_BusinessWorker) (int, bool, string, 
 	jwt_and_rol.Name = worker_found.Name
 	jwt_and_rol.Lastname = worker_found.LastName
 	jwt_and_rol.ID = worker_found.IdBusiness
+
+	return 201, false, "", jwt_and_rol
+}
+
+/*=======================================*/
+/*===============VERSION 2===============*/
+/*=======================================*/
+
+func V2_Login_Service(input_login Input_BusinessWorker_login) (int, bool, string, JWTAndRol) {
+
+	//Variable
+	var jwt_and_rol JWTAndRol
+	var worker_or_subworker models.Pg_BusinessWorker
+
+	if input_login.IsAnfitrion {
+		//Buscamos la existencia del registro en Pg
+		worker_found, error_findworker := worker_reposiroty.Pg_FindByPhone(input_login.Phone, input_login.IdCountry)
+		if error_findworker != nil {
+			return 500, true, "Error en el servidor interno al intentar buscar el anfitrión, detalle: " + error_findworker.Error(), jwt_and_rol
+		}
+		if strconv.Itoa(worker_found.Phone) == "" || worker_found.IsDeleted {
+			return 404, true, "666" + "Este anfitrion no se encuentra registrado", jwt_and_rol
+		}
+		if worker_found.Isbanned {
+			return 404, true, "777" + "Este anfitrión se encuentra baneado", jwt_and_rol
+		}
+
+		worker_or_subworker = worker_found
+	} else {
+		//Buscamos la existencia del registro en Pg
+		subworker_found, error_findsubworker := worker_reposiroty.Pg_FindByEmail(input_login.Email)
+		if error_findsubworker != nil {
+			return 500, true, "Error en el servidor interno al intentar buscar el colaborador, detalle: " + error_findsubworker.Error(), jwt_and_rol
+		}
+		if strconv.Itoa(subworker_found.Phone) == "" || subworker_found.IsDeleted {
+			return 404, true, "666" + "Este anfitrion no se encuentra registrado", jwt_and_rol
+		}
+		if subworker_found.Isbanned {
+			return 404, true, "777" + "Este anfitrión se encuentra baneado", jwt_and_rol
+		}
+
+		worker_or_subworker = subworker_found
+	}
+
+	//Intentamos el login
+	error_compareToken := compareToken(worker_or_subworker.Password, worker_or_subworker.Password)
+	if error_compareToken != nil {
+		return 403, true, "888" + "Telefono y/o Contraseña incorrectos, detalle: " + error_compareToken.Error(), jwt_and_rol
+	}
+
+	jwtKey, error_generatingJWT := generateJWT(worker_or_subworker)
+	if error_generatingJWT != nil {
+		return 500, true, "Error en el servidor interno al intentar generar el token, detalle: " + error_generatingJWT.Error(), jwt_and_rol
+	}
+
+	//Registramos en Redis
+	err_add_re := worker_reposiroty.Re_Set_Email(worker_or_subworker.IdWorker, worker_or_subworker.SessionCode, 2)
+	if err_add_re != nil {
+		return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), jwt_and_rol
+	}
+
+	jwt_and_rol.JWT = jwtKey
+	jwt_and_rol.Rol = worker_or_subworker.IdRol
+	jwt_and_rol.Phone = worker_or_subworker.Phone
+	jwt_and_rol.Country = worker_or_subworker.IdCountry
+	jwt_and_rol.Name = worker_or_subworker.Name
+	jwt_and_rol.Lastname = worker_or_subworker.LastName
+	jwt_and_rol.ID = worker_or_subworker.IdBusiness
 
 	return 201, false, "", jwt_and_rol
 }

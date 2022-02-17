@@ -215,3 +215,46 @@ func (cr *registerRouter) RegisterColaborador(c echo.Context) error {
 	results := Response_WithString{Error: boolerror, DataError: dataerror, Data: data}
 	return c.JSON(status, results)
 }
+
+/*=======================================*/
+/*===============VERSION 2===============*/
+/*=======================================*/
+
+func (cr *registerRouter) V2_RegisterColaborador(c echo.Context) error {
+
+	//Obtenemos los datos del auth
+	status, boolerror, dataerror, data_idbusiness, data_idrol := GetJWTRol(c.Request().Header.Get("Authorization"))
+	if dataerror != "" {
+		results := Response_WithString{Error: boolerror, DataError: dataerror, Data: ""}
+		return c.JSON(status, results)
+	}
+	if data_idrol <= 0 {
+		results := Response_WithString{Error: true, DataError: "Token incorrecto", Data: ""}
+		return c.JSON(400, results)
+	}
+	if data_idrol != 1 {
+		results := Response_WithString{Error: true, DataError: "Este rol no puede crear colaboradores", Data: ""}
+		return c.JSON(403, results)
+	}
+
+	//Instanciamos una variable del modelo Code
+	var anfitrion models.Pg_BusinessWorker
+
+	//Agregamos los valores enviados a la variable creada
+	err := c.Bind(&anfitrion)
+	if err != nil {
+		results := Response_WithString{Error: true, DataError: "Se debe enviar los datos del pais, nombre, apellido y contraseña del anfitrion, revise la estructura o los valores", Data: ""}
+		return c.JSON(400, results)
+	}
+
+	//Validamos los valores enviados
+	if len(anfitrion.Email) < 3 && len(anfitrion.Email) > 100 || len(anfitrion.Password) < 8 || len(anfitrion.Name) < 1 || len(anfitrion.LastName) < 1 {
+		results := Response_WithString{Error: true, DataError: "El valor ingresado no cumple con la regla de negocio", Data: ""}
+		return c.JSON(400, results)
+	}
+
+	//Enviamos los datos al servicio
+	status, boolerror, dataerror, data := V2_RegisterColaborador_Service(data_idbusiness, anfitrion)
+	results := Response_WithString{Error: boolerror, DataError: dataerror, Data: data}
+	return c.JSON(status, results)
+}

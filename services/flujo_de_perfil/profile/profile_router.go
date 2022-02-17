@@ -221,3 +221,41 @@ func (pr *profileRouter) GetColaboradorToExport(c echo.Context) error {
 	results := Response_SubWorker_ToExport{Error: boolerror, DataError: dataerror, Data: data}
 	return c.JSON(status, results)
 }
+
+/*=======================================*/
+/*===============VERSION 2===============*/
+/*=======================================*/
+
+func (pr *profileRouter) V2_GetColaborador(c echo.Context) error {
+
+	//Obtenemos los datos del auth
+	status, boolerror, dataerror, data_idrol := GetJWTRol(c.Request().Header.Get("Authorization"))
+	if dataerror != "" {
+		results := Response_WithString{Error: boolerror, DataError: dataerror, Data: ""}
+		return c.JSON(status, results)
+	}
+	if data_idrol <= 0 {
+		results := Response_WithString{Error: true, DataError: "Token incorrecto", Data: ""}
+		return c.JSON(400, results)
+	}
+	if data_idrol != 1 {
+		results := Response_WithString{Error: true, DataError: "Este rol no puede listar colaboradores", Data: ""}
+		return c.JSON(403, results)
+	}
+
+	//Obtenemos los datos del auth
+	status, boolerror, dataerror, data_idbusiness := GetJWT(c.Request().Header.Get("Authorization"))
+	if dataerror != "" {
+		results := Response_WithString{Error: boolerror, DataError: dataerror, Data: ""}
+		return c.JSON(status, results)
+	}
+	if data_idbusiness <= 0 {
+		results := Response_WithString{Error: true, DataError: "Token incorrecto", Data: ""}
+		return c.JSON(400, results)
+	}
+
+	//Enviamos los datos al servicio
+	status, boolerror, dataerror, data := V2_GetColaborador_Service(data_idbusiness)
+	results := Response_SubWorkers_V2{Error: boolerror, DataError: dataerror, Data: data}
+	return c.JSON(status, results)
+}

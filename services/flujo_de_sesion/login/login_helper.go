@@ -51,10 +51,9 @@ type JWTAndRol struct {
 /*-------------------------------------*/
 
 type Input_BusinessWorker_login struct {
-	Phone           int    `json:"phone"`
-	IdCountry       int    `json:"country"`
-	Password        string `json:"password"`
-	Email           string `json:"email"`
-	IsAnfitrion     bool   `json:"isworker"`
-	DateTimeSession string `json:"datetime"`
+	Phone       int    `json:"phone"`
+	IdCountry   int    `json:"country"`
+	Password    string `json:"password"`
+	Email       string `json:"email"`
+	IsAnfitrion bool   `json:"isworker"`
 }

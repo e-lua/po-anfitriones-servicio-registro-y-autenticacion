@@ -50,3 +50,13 @@ type Entry_Profile struct {
 	Name     string `json:"name"`
 	LastName string `json:"lastname"`
 }
+
+/*=======================================*/
+/*===============VERSION 2===============*/
+/*=======================================*/
+
+type Response_SubWorkers_V2 struct {
+	Error     bool                     `json:"error"`
+	DataError string                   `json:"dataError"`
+	Data      []models.V2_Pg_SubWorker `json:"data"`
+}

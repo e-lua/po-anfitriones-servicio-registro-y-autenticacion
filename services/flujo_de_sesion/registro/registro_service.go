@@ -314,3 +314,47 @@ func serialize(anfitrion models.Pg_BusinessWorker) ([]byte, error) {
 	}
 	return b.Bytes(), nil
 }
+
+/*=======================================*/
+/*===============VERSION 2===============*/
+/*=======================================*/
+
+func V2_RegisterColaborador_Service(data_idbusiness int, input_anfitrion models.Pg_BusinessWorker) (int, bool, string, string) {
+
+	//Validamos la cantidad de Colaboradores
+	_, quantity_subworkers, _ := worker_repository.Pg_Find_Qty_SubWorkers(data_idbusiness)
+	if quantity_subworkers > 13 {
+		return 404, true, "Solo se puede registrar como máximo 2 colaboradores", ""
+	}
+
+	//Validamos si esta registrado en el modelo
+	anfitrion_found, _ := worker_repository.Pg_FindByEmail(input_anfitrion.Email)
+	if len(anfitrion_found.Email) > 2 {
+		return 403, true, "Este email ya se ha registrado", ""
+	}
+
+	//Creamos un codigo de sesion
+	hour, minute, sec := time.Now().Clock()
+
+	//Encriptar password
+	encrypted_pass, _ := encrypt(input_anfitrion.Password)
+	input_anfitrion.Password = encrypted_pass
+	input_anfitrion.UpdatedDate = time.Now()
+	input_anfitrion.SessionCode = minute*100 + sec + hour + 1111 + rand.Intn(7483647)
+	input_anfitrion.IdBusiness = data_idbusiness
+	input_anfitrion.Phone = 000000000
+
+	//Enviamos la variable instanciada al repository
+	idsubworker, error_insert_anfitrion := worker_repository.V2_Pg_Add_Subworker(input_anfitrion)
+	if error_insert_anfitrion != nil {
+		return 500, true, "Error interno en el servidor al intentar registrar al colaborador, detalle: " + error_insert_anfitrion.Error(), ""
+	}
+
+	//Registramos en Redis
+	err_add_re := worker_repository.Re_Set_Email(idsubworker, input_anfitrion.SessionCode, 2)
+	if err_add_re != nil {
+		return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), ""
+	}
+
+	return 201, false, "", "Registro exitoso"
+}

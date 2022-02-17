@@ -17,3 +17,14 @@ func Re_Get_Id(idworker int, idcountry int, idbusiness int) (string, error) {
 
 	return reply, nil
 }
+
+func Re_Get_Email(idworker int, sessioncode int, idrol int) (string, error) {
+
+	reply, err := redis.String(models.RedisCN.Get().Do("GET", strconv.Itoa(idworker)+strconv.Itoa(idrol)))
+
+	if err != nil {
+		return reply, err
+	}
+
+	return reply, nil
+}

@@ -16,6 +16,7 @@ type Pg_BusinessWorker struct {
 	SessionCode int       `json:"sessioncode"`
 	UpdatedDate time.Time `json:"updateDate"`
 	IsDeleted   bool      `json:"isdeleted"`
+	Email       string    `json:"email"`
 }
 
 type Pg_SubWorker struct {
@@ -27,4 +28,13 @@ type Pg_SubWorker struct {
 	IdCountry      int    `json:"country"`
 	Phone          int    `json:"phone"`
 	DateRegistered string `json:"dateregistered"`
+}
+
+type V2_Pg_SubWorker struct {
+	IdWorker   int    `json:"idWorker"`
+	IdBusiness int    `json:"idBusiness"`
+	IdRol      int    `json:"rol"`
+	Name       string `json:"name"`
+	LastName   string `json:"lastName"`
+	Email      string `json:"email"`
 }

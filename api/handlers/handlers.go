@@ -74,11 +74,17 @@ func Manejadores() {
 	/*=======================================*/
 
 	//VERSION
-	//version_2 := e.Group("/v2")
+	version_2 := e.Group("/v2")
 
 	//V2 TO LOGIN
-	//router_login_v2 := version_2.Group("/login")
-	//router_login_v2.POST("", login.Loginrouter.Login)
+	router_login_v2 := version_2.Group("/login")
+	router_login_v2.POST("", login.Loginrouter.V2_Login)
+
+	//V2 TO COLABORADOR
+	router_colaborador_v2 := version_2.Group("/subworker")
+	router_colaborador_v2.POST("", register.RegisterRouter.V2_RegisterColaborador)
+	router_colaborador_v2.GET("", profile.ProfileRouter.V2_GetColaborador)
+	router_colaborador_v2.DELETE("/:idsubworker", profile.ProfileRouter.DeleteColaborador)
 
 	/*=======================================*/
 	/*=======ADDITONAL CONFIGURATIONS========*/

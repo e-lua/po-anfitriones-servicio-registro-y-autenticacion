@@ -15,3 +15,13 @@ func Re_Set_ID(idworker int, idcountry int, sessioncode int, idbusiness int) (in
 
 	return idbusiness, nil
 }
+
+func Re_Set_Email(idworker int, sessioncode int, idrol int) error {
+
+	_, err_do := models.RedisCN.Get().Do("SET", strconv.Itoa(idworker)+strconv.Itoa(idrol), strconv.Itoa(idworker)+strconv.Itoa(sessioncode)+strconv.Itoa(idrol), "EX", 7776000)
+	if err_do != nil {
+		return err_do
+	}
+
+	return nil
+}
