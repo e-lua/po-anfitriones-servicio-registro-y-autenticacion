@@ -61,10 +61,6 @@ func Manejadores() {
 	router_colaborador_v1.GET("", profile.ProfileRouter.GetColaborador)
 	router_colaborador_v1.DELETE("/:idsubworker", profile.ProfileRouter.DeleteColaborador)
 
-	//V1 TO COLABORADOR A EXPORTAR
-	router_colaborador_to_export_v1 := version_1.Group("/subworkertoexport")
-	router_colaborador_to_export_v1.GET("/:idsubworker", profile.ProfileRouter.GetColaboradorToExport)
-
 	//V1 TO TRYLOGIN
 	router_login := version_1.Group("/trylogin")
 	router_login.GET("", login.Loginrouter.TryingLogin)
@@ -85,6 +81,10 @@ func Manejadores() {
 	router_colaborador_v2.POST("", register.RegisterRouter.V2_RegisterColaborador)
 	router_colaborador_v2.GET("", profile.ProfileRouter.V2_GetColaborador)
 	router_colaborador_v2.DELETE("/:idsubworker", profile.ProfileRouter.DeleteColaborador)
+
+	//V2 TO COLABORADOR A EXPORTAR - SE UTILIZA EN PEDIDOS, PERO SE VA A BORRAR
+	router_colaborador_to_export_v2 := version_2.Group("/subworkertoexport")
+	router_colaborador_to_export_v2.GET("/:idsubworker", profile.ProfileRouter.GetColaboradorToExport)
 
 	/*=======================================*/
 	/*=======ADDITONAL CONFIGURATIONS========*/
