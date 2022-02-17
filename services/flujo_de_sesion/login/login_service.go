@@ -195,10 +195,9 @@ func V2_Login_Service(input_login Input_BusinessWorker_login) (int, bool, string
 
 	//Variable
 	var jwt_and_rol JWTAndRol
-	var worker_or_subworker models.Pg_BusinessWorker
 
 	if input_login.IsAnfitrion {
-		//Buscamos la existencia del registro en Pg
+		//SI ES ANFITRION
 		worker_found, error_findworker := worker_reposiroty.Pg_FindByPhone(input_login.Phone, input_login.IdCountry)
 		if error_findworker != nil {
 			return 500, true, "Error en el servidor interno al intentar buscar el anfitrión, detalle: " + error_findworker.Error(), jwt_and_rol
@@ -210,9 +209,33 @@ func V2_Login_Service(input_login Input_BusinessWorker_login) (int, bool, string
 			return 404, true, "777" + "Este anfitrión se encuentra baneado", jwt_and_rol
 		}
 
-		worker_or_subworker = worker_found
+		//Intentamos el login
+		error_compareToken := compareToken(worker_found.Password, input_login.Password)
+		if error_compareToken != nil {
+			return 403, true, "888" + "Telefono y/o Contraseña incorrectos, detalle: " + error_compareToken.Error(), jwt_and_rol
+		}
+
+		jwtKey, error_generatingJWT := generateJWT(worker_found)
+		if error_generatingJWT != nil {
+			return 500, true, "Error en el servidor interno al intentar generar el token, detalle: " + error_generatingJWT.Error(), jwt_and_rol
+		}
+
+		//Registramos en Redis
+		_, err_add_re := worker_reposiroty.Re_Set_ID(worker_found.IdWorker, worker_found.IdCountry, worker_found.SessionCode, worker_found.IdBusiness)
+		if err_add_re != nil {
+			return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), jwt_and_rol
+		}
+
+		jwt_and_rol.JWT = jwtKey
+		jwt_and_rol.Rol = worker_found.IdRol
+		jwt_and_rol.Phone = input_login.Phone
+		jwt_and_rol.Country = worker_found.IdCountry
+		jwt_and_rol.Name = worker_found.Name
+		jwt_and_rol.Lastname = worker_found.LastName
+		jwt_and_rol.ID = worker_found.IdBusiness
+
 	} else {
-		//Buscamos la existencia del registro en Pg
+		//SI NO ES ANFITRION
 		subworker_found, error_findsubworker := worker_reposiroty.Pg_FindByEmail(input_login.Email)
 		if error_findsubworker != nil {
 			return 500, true, "Error en el servidor interno al intentar buscar el colaborador, detalle: " + error_findsubworker.Error(), jwt_and_rol
@@ -224,33 +247,31 @@ func V2_Login_Service(input_login Input_BusinessWorker_login) (int, bool, string
 			return 404, true, "777" + "Este anfitrión se encuentra baneado", jwt_and_rol
 		}
 
-		worker_or_subworker = subworker_found
-	}
+		//Intentamos el login
+		error_compareToken := compareToken(subworker_found.Password, input_login.Password)
+		if error_compareToken != nil {
+			return 403, true, "888" + "Telefono y/o Contraseña incorrectos, detalle: " + error_compareToken.Error(), jwt_and_rol
+		}
 
-	//Intentamos el login
-	error_compareToken := compareToken(worker_or_subworker.Password, worker_or_subworker.Password)
-	if error_compareToken != nil {
-		return 403, true, "888" + "Telefono y/o Contraseña incorrectos, detalle: " + error_compareToken.Error(), jwt_and_rol
-	}
+		jwtKey, error_generatingJWT := generateJWT(subworker_found)
+		if error_generatingJWT != nil {
+			return 500, true, "Error en el servidor interno al intentar generar el token, detalle: " + error_generatingJWT.Error(), jwt_and_rol
+		}
 
-	jwtKey, error_generatingJWT := generateJWT(worker_or_subworker)
-	if error_generatingJWT != nil {
-		return 500, true, "Error en el servidor interno al intentar generar el token, detalle: " + error_generatingJWT.Error(), jwt_and_rol
-	}
+		//Registramos en Redis
+		err_add_re := worker_reposiroty.Re_Set_Email(subworker_found.IdWorker, subworker_found.SessionCode, 2)
+		if err_add_re != nil {
+			return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), jwt_and_rol
+		}
 
-	//Registramos en Redis
-	err_add_re := worker_reposiroty.Re_Set_Email(worker_or_subworker.IdWorker, worker_or_subworker.SessionCode, 2)
-	if err_add_re != nil {
-		return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), jwt_and_rol
+		jwt_and_rol.JWT = jwtKey
+		jwt_and_rol.Rol = subworker_found.IdRol
+		jwt_and_rol.Phone = subworker_found.Phone
+		jwt_and_rol.Country = subworker_found.IdCountry
+		jwt_and_rol.Name = subworker_found.Name
+		jwt_and_rol.Lastname = subworker_found.LastName
+		jwt_and_rol.ID = subworker_found.IdBusiness
 	}
-
-	jwt_and_rol.JWT = jwtKey
-	jwt_and_rol.Rol = worker_or_subworker.IdRol
-	jwt_and_rol.Phone = worker_or_subworker.Phone
-	jwt_and_rol.Country = worker_or_subworker.IdCountry
-	jwt_and_rol.Name = worker_or_subworker.Name
-	jwt_and_rol.Lastname = worker_or_subworker.LastName
-	jwt_and_rol.ID = worker_or_subworker.IdBusiness
 
 	return 201, false, "", jwt_and_rol
 }
