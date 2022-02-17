@@ -29,6 +29,17 @@ func GetJWTRol(jwt string) (int, bool, string, int, int) {
 	return 200, false, "", get_respuesta.Data.IdBusiness, get_respuesta.Data.IdRol
 }
 
+func GetJWTRolCountry(jwt string) (int, bool, string, int, int, int) {
+	//Obtenemos los datos del auth
+	respuesta, _ := http.Get("http://localhost:5000/v1/trylogin?jwt=" + jwt)
+	var get_respuesta ResponseJWT
+	error_decode_respuesta := json.NewDecoder(respuesta.Body).Decode(&get_respuesta)
+	if error_decode_respuesta != nil {
+		return 500, true, "Error en el sevidor interno al intentar decodificar la autenticacion, detalles: " + error_decode_respuesta.Error(), 0, 0, 0
+	}
+	return 200, false, "", get_respuesta.Data.IdBusiness, get_respuesta.Data.IdRol, get_respuesta.Data.IdCountry
+}
+
 /*----------------------COMIENZA EL ROUTER----------------------*/
 
 func (rr *registerRouter) AvailableRegister(c echo.Context) error {
@@ -223,7 +234,7 @@ func (cr *registerRouter) RegisterColaborador(c echo.Context) error {
 func (cr *registerRouter) V2_RegisterColaborador(c echo.Context) error {
 
 	//Obtenemos los datos del auth
-	status, boolerror, dataerror, data_idbusiness, data_idrol := GetJWTRol(c.Request().Header.Get("Authorization"))
+	status, boolerror, dataerror, data_idbusiness, data_idrol, data_idcountry := GetJWTRolCountry(c.Request().Header.Get("Authorization"))
 	if dataerror != "" {
 		results := Response_WithString{Error: boolerror, DataError: dataerror, Data: ""}
 		return c.JSON(status, results)
@@ -254,7 +265,7 @@ func (cr *registerRouter) V2_RegisterColaborador(c echo.Context) error {
 	}
 
 	//Enviamos los datos al servicio
-	status, boolerror, dataerror, data := V2_RegisterColaborador_Service(data_idbusiness, anfitrion)
+	status, boolerror, dataerror, data := V2_RegisterColaborador_Service(data_idbusiness, anfitrion, data_idcountry)
 	results := Response_WithString{Error: boolerror, DataError: dataerror, Data: data}
 	return c.JSON(status, results)
 }

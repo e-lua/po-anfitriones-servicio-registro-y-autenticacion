@@ -319,7 +319,7 @@ func serialize(anfitrion models.Pg_BusinessWorker) ([]byte, error) {
 /*===============VERSION 2===============*/
 /*=======================================*/
 
-func V2_RegisterColaborador_Service(data_idbusiness int, input_anfitrion models.Pg_BusinessWorker) (int, bool, string, string) {
+func V2_RegisterColaborador_Service(data_idbusiness int, input_anfitrion models.Pg_BusinessWorker, data_country int) (int, bool, string, string) {
 
 	//Validamos la cantidad de Colaboradores
 	_, quantity_subworkers, _ := worker_repository.Pg_Find_Qty_SubWorkers(data_idbusiness)
@@ -343,6 +343,7 @@ func V2_RegisterColaborador_Service(data_idbusiness int, input_anfitrion models.
 	input_anfitrion.SessionCode = minute*100 + sec + hour + 1111 + rand.Intn(7483647)
 	input_anfitrion.IdBusiness = data_idbusiness
 	input_anfitrion.Phone = 000000000
+	input_anfitrion.IdCountry = data_country
 
 	//Enviamos la variable instanciada al repository
 	idsubworker, error_insert_anfitrion := worker_repository.V2_Pg_Add_Subworker(input_anfitrion)
