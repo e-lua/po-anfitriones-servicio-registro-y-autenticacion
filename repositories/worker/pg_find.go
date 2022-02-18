@@ -221,8 +221,8 @@ func V2_Pg_Find_SubWorkers_ToWorker(idworker int) (models.V2_Pg_SubWorker, error
 	var subworker_pg models.V2_Pg_SubWorker
 
 	db := models.Conectar_Pg_DB()
-	q := "SELECT idworker,idbusiness,name,lastname,email FROM businessworker WHERE idworker=$1"
-	error_query := db.QueryRow(ctx, q, idworker).Scan(&subworker_pg.IdWorker, &subworker_pg.IdBusiness, &subworker_pg.Name, &subworker_pg.LastName, &subworker_pg.Email)
+	q := "SELECT idworker,idbusiness,name,lastname,email,idrol FROM businessworker WHERE idworker=$1"
+	error_query := db.QueryRow(ctx, q, idworker).Scan(&subworker_pg.IdWorker, &subworker_pg.IdBusiness, &subworker_pg.Name, &subworker_pg.LastName, &subworker_pg.Email, &subworker_pg.IdRol)
 
 	if error_query != nil {
 		return subworker_pg, error_query
