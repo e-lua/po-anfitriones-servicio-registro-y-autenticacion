@@ -3,6 +3,7 @@ package registro
 import (
 	"encoding/json"
 	"net/http"
+	"regexp"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -258,8 +259,11 @@ func (cr *registerRouter) V2_RegisterColaborador(c echo.Context) error {
 		return c.JSON(400, results)
 	}
 
+	emailRegex := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+	isemailvalid := emailRegex.MatchString(anfitrion.Email)
+
 	//Validamos los valores enviados
-	if len(anfitrion.Email) < 3 && len(anfitrion.Email) > 100 || len(anfitrion.Password) < 8 || len(anfitrion.Name) < 1 || len(anfitrion.LastName) < 1 {
+	if len(anfitrion.Email) < 3 && len(anfitrion.Email) > 100 || !isemailvalid || len(anfitrion.Password) < 8 || len(anfitrion.Name) < 1 || len(anfitrion.LastName) < 1 {
 		results := Response_WithString{Error: true, DataError: "El valor ingresado no cumple con la regla de negocio", Data: ""}
 		return c.JSON(400, results)
 	}
