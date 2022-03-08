@@ -234,6 +234,7 @@ func V2_Login_Service(input_login Input_BusinessWorker_login) (int, bool, string
 		jwt_and_rol.Name = worker_found.Name
 		jwt_and_rol.Lastname = worker_found.LastName
 		jwt_and_rol.ID = worker_found.IdBusiness
+		jwt_and_rol.IDDevice = worker_found.IDDevice
 
 	} else {
 		//SI NO ES ANFITRION
@@ -272,6 +273,7 @@ func V2_Login_Service(input_login Input_BusinessWorker_login) (int, bool, string
 		jwt_and_rol.Name = subworker_found.Name
 		jwt_and_rol.Lastname = subworker_found.LastName
 		jwt_and_rol.ID = subworker_found.IdBusiness
+		jwt_and_rol.IDDevice = subworker_found.IDDevice
 	}
 
 	return 201, false, "", jwt_and_rol

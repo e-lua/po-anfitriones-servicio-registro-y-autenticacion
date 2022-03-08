@@ -165,8 +165,8 @@ func Pg_FindByEmail(email string) (models.Pg_BusinessWorker, error) {
 	var anfitrion models.Pg_BusinessWorker
 
 	db := models.Conectar_Pg_DB()
-	q := `SELECT idbusiness,idworker,idcountry,idrol,password,name,lastname,isbanned,sessioncode,isdeleted,email FROM BusinessWorker WHERE email=$1 AND  isdeleted=false LIMIT 1`
-	error_show := db.QueryRow(ctx, q, email).Scan(&anfitrion.IdBusiness, &anfitrion.IdWorker, &anfitrion.IdCountry, &anfitrion.IdRol, &anfitrion.Password, &anfitrion.Name, &anfitrion.LastName, &anfitrion.Isbanned, &anfitrion.SessionCode, &anfitrion.IsDeleted, &anfitrion.Email)
+	q := `SELECT idbusiness,idworker,idcountry,idrol,password,name,lastname,isbanned,sessioncode,isdeleted,email,iddevice FROM BusinessWorker WHERE email=$1 AND  isdeleted=false LIMIT 1`
+	error_show := db.QueryRow(ctx, q, email).Scan(&anfitrion.IdBusiness, &anfitrion.IdWorker, &anfitrion.IdCountry, &anfitrion.IdRol, &anfitrion.Password, &anfitrion.Name, &anfitrion.LastName, &anfitrion.Isbanned, &anfitrion.SessionCode, &anfitrion.IsDeleted, &anfitrion.Email, &anfitrion.IDDevice)
 
 	if error_show != nil {
 		return anfitrion, error_show
