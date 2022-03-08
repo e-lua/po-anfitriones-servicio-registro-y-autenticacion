@@ -40,7 +40,7 @@ func Manejadores() {
 
 	//V1 TO DEVICE
 	router_device_v1 := version_1.Group("/device")
-	router_device_v1.PUT("", profile.ProfileRouter.UpdateIDDevice)
+	router_device_v1.PUT("", profile.ProfileRouter.UpdatIDDevice)
 
 	//V1 TO ENTITY-CODE
 	router_code_v1 := version_1.Group("/codes")

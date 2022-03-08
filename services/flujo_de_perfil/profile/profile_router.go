@@ -222,7 +222,7 @@ func (pr *profileRouter) GetColaboradorToExport(c echo.Context) error {
 	return c.JSON(status, results)
 }
 
-func (pr *profileRouter) UpdateIDDevice(c echo.Context) error {
+func (pr *profileRouter) UpdatIDDevice(c echo.Context) error {
 
 	//Obtenemos los datos del auth
 	status, boolerror, dataerror, data_idworker := GetJWTSubWorker(c.Request().Header.Get("Authorization"))
