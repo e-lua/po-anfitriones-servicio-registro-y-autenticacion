@@ -222,6 +222,40 @@ func (pr *profileRouter) GetColaboradorToExport(c echo.Context) error {
 	return c.JSON(status, results)
 }
 
+func (pr *profileRouter) UpdateIDDevice(c echo.Context) error {
+
+	//Obtenemos los datos del auth
+	status, boolerror, dataerror, data_idworker := GetJWTSubWorker(c.Request().Header.Get("Authorization"))
+	if dataerror != "" {
+		results := Response_WithString{Error: boolerror, DataError: dataerror, Data: ""}
+		return c.JSON(status, results)
+	}
+	if data_idworker <= 0 {
+		results := Response_WithString{Error: true, DataError: "Token incorrecto", Data: ""}
+		return c.JSON(400, results)
+	}
+
+	var id_device Input_IDDevice
+
+	//Agregamos los valores enviados a la variable creada
+	err := c.Bind(&id_device)
+	if err != nil {
+		results := Response_WithString{Error: true, DataError: "Se debe enviar los datos necesarios para actualizar la contraseña, revise la estructura o los valores", Data: ""}
+		return c.JSON(400, results)
+	}
+
+	//Validamos los valores enviados
+	if len(id_device.IDDevice) < 5 {
+		results := Response_WithString{Error: true, DataError: "El valor ingresado no cumple con la regla de negocio", Data: ""}
+		return c.JSON(400, results)
+	}
+
+	//Enviamos los datos al servicio
+	status, boolerror, dataerror, data := UpdateIDDevice_Service(data_idworker, id_device.IDDevice)
+	results := Response{Error: boolerror, DataError: dataerror, Data: data}
+	return c.JSON(status, results)
+}
+
 /*=======================================*/
 /*===============VERSION 2===============*/
 /*=======================================*/

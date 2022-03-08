@@ -38,6 +38,10 @@ func Manejadores() {
 	router_login_v1 := version_1.Group("/login")
 	router_login_v1.POST("", login.Loginrouter.Login)
 
+	//V1 TO DEVICE
+	router_device_v1 := version_1.Group("/device")
+	router_device_v1.PUT("", profile.ProfileRouter.UpdateIDDevice)
+
 	//V1 TO ENTITY-CODE
 	router_code_v1 := version_1.Group("/codes")
 	router_code_v1.POST("", register.RegisterRouter.SignUpNumber)

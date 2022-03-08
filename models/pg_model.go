@@ -17,6 +17,7 @@ type Pg_BusinessWorker struct {
 	UpdatedDate time.Time `json:"updateDate"`
 	IsDeleted   bool      `json:"isdeleted"`
 	Email       string    `json:"email"`
+	IDDevice    string    `json:"iddevice"`
 }
 
 type Pg_SubWorker struct {

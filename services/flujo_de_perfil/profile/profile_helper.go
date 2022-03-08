@@ -8,6 +8,12 @@ type Response_WithInt struct {
 	Data      int    `json:"data"`
 }
 
+type Response struct {
+	Error     bool   `json:"error"`
+	DataError string `json:"dataError"`
+	Data      string `json:"data"`
+}
+
 type Response_WithString struct {
 	Error     bool   `json:"error"`
 	DataError string `json:"dataError"`
@@ -49,6 +55,10 @@ type EntryData_Password struct {
 type Entry_Profile struct {
 	Name     string `json:"name"`
 	LastName string `json:"lastname"`
+}
+
+type Input_IDDevice struct {
+	IDDevice string `json:"iddevice"`
 }
 
 /*=======================================*/

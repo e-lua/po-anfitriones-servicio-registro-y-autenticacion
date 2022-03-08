@@ -122,6 +122,17 @@ func DeleteColaborador_Service(input_idsubworker int) (int, bool, string, string
 	return 201, false, "", "Colaborador eliminado correctamente"
 }
 
+func UpdateIDDevice_Service(input_idworker int, iddevice string) (int, bool, string, string) {
+
+	//Enviamos la variable instanciada al repository
+	error_update_iddevice := worker_repository.Pg_Update_IDDevice(input_idworker, iddevice)
+	if error_update_iddevice != nil {
+		return 500, true, "Error interno en el servidor al intentar actualziar el ID del dispositivo, detalle: " + error_update_iddevice.Error(), ""
+	}
+
+	return 201, false, "", "ID de dispositivo actualizado correctamente"
+}
+
 func GetColaborador_Service(input_idbusiness int) (int, bool, string, []models.Pg_SubWorker) {
 
 	//Enviamos la variable instanciada al repository
