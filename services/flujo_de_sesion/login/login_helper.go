@@ -46,7 +46,6 @@ type JWTAndRol struct {
 	Name     string `json:"name"`
 	Lastname string `json:"lastname"`
 	ID       int    `json:"id"`
-	IDDevice string `json:"iddevice"`
 }
 
 /*-------------------------------------*/
