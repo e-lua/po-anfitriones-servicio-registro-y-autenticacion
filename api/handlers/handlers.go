@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/rs/cors"
 
+	export "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/services/flujo_de_perfil/export"
 	profile "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/services/flujo_de_perfil/profile"
 	login "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/services/flujo_de_sesion/login"
 	register "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/services/flujo_de_sesion/registro"
@@ -93,6 +94,10 @@ func Manejadores() {
 	/*=======================================*/
 	/*=======ADDITONAL CONFIGURATIONS========*/
 	/*=======================================*/
+
+	//V1 TO EXPORT
+	router_export := version_1.Group("/export")
+	router_export.GET("/:idbusiness", export.ExportRouter.ExportIDDevice)
 
 	//Abrimos el puerto
 	PORT := os.Getenv("PORT")
