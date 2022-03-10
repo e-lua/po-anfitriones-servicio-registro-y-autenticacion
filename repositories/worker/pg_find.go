@@ -203,6 +203,34 @@ func Pg_Find_IDDevice(idbusiness int) ([]string, error) {
 	return oListDevice, nil
 }
 
+func Pg_Find_IDDevice_All() ([]string, error) {
+
+	//Tiempo limite al contexto
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	//defer cancelara el contexto
+	defer cancel()
+
+	db := models.Conectar_Pg_DB()
+	q := "SELECT iddevice FROM businessworker WHERE iddevice<>''"
+	rows, error_query := db.Query(ctx, q)
+
+	//Instanciamos una variable del modelo Pg_SubWorker
+	var oListDevice []string
+
+	if error_query != nil {
+		return oListDevice, error_query
+	}
+
+	//Scaneamos l resultado y lo asignamos a la variable instanciada
+	for rows.Next() {
+		var onedevice string
+		rows.Scan(&onedevice)
+		oListDevice = append(oListDevice, onedevice)
+	}
+
+	return oListDevice, nil
+}
+
 /*=======================================*/
 /*===============VERSION 2===============*/
 /*=======================================*/

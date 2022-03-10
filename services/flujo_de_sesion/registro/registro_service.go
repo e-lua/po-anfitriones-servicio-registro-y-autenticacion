@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"math/rand"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -350,6 +351,18 @@ func V2_RegisterColaborador_Service(data_idbusiness int, input_anfitrion models.
 	if err_add_re != nil {
 		return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), ""
 	}
+
+	/*--SENT NOTIFICATION--*/
+	notification := map[string]interface{}{
+		"message":  "Dale una calurosa bienvenida al nuevo integrate del equipo: " + input_anfitrion.Name + " " + input_anfitrion.LastName,
+		"iduser":   data_idbusiness,
+		"typeuser": 1,
+		"priority": 1,
+		"title":    "Restoner anfitriones",
+	}
+	json_data, _ := json.Marshal(notification)
+	http.Post("http://c-a-notificacion-tip.restoner-api.fun:5800/v1/notification", "application/json", bytes.NewBuffer(json_data))
+	/*---------------------*/
 
 	return 201, false, "", "Registro exitoso"
 }
