@@ -97,7 +97,7 @@ func Manejadores() {
 
 	//V1 TO EXPORT
 	router_export := version_1.Group("/export")
-	router_export.GET("", export.ExportRouter.ExportIDDevice)
+	router_export.POST("", export.ExportRouter.ExportIDDevice)
 
 	//Abrimos el puerto
 	PORT := os.Getenv("PORT")

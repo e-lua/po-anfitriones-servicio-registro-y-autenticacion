@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	models "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/models"
@@ -185,6 +186,48 @@ func Pg_Find_IDDevice(idbusiness int) ([]string, error) {
 	db := models.Conectar_Pg_DB()
 	q := "SELECT iddevice FROM businessworker WHERE idbusiness=$1 and iddevice<>''"
 	rows, error_query := db.Query(ctx, q, idbusiness)
+
+	//Instanciamos una variable del modelo Pg_SubWorker
+	var oListDevice []string
+
+	if error_query != nil {
+		return oListDevice, error_query
+	}
+
+	//Scaneamos l resultado y lo asignamos a la variable instanciada
+	for rows.Next() {
+		var onedevice string
+		rows.Scan(&onedevice)
+		oListDevice = append(oListDevice, onedevice)
+	}
+
+	return oListDevice, nil
+}
+
+func Pg_Find_IDDevice_Many(inputmanybusinesses []int) ([]string, error) {
+
+	//Tiempo limite al contexto
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	//defer cancelara el contexto
+	defer cancel()
+
+	//Instanciamos una variable para obtener los ibbusiness
+	oListBusiness := ""
+
+	for _, val := range inputmanybusinesses {
+		var oBusiness string
+		var oConector string
+		oBusiness = " idbusiness<>" + strconv.Itoa(val)
+		oConector = " AND"
+		oListBusiness += oBusiness
+		oListBusiness += oConector
+	}
+	oListBusiness = oListBusiness[0 : len(oListBusiness)-4]
+
+	//Enviamos la Query
+	db := models.Conectar_Pg_DB()
+	q := "SELECT iddevice FROM businessworker WHERE iddevice<>'' AND" + oListBusiness
+	rows, error_query := db.Query(ctx, q)
 
 	//Instanciamos una variable del modelo Pg_SubWorker
 	var oListDevice []string
