@@ -328,6 +328,9 @@ func V2_RegisterColaborador_Service(data_idbusiness int, input_anfitrion models.
 		return 403, true, "Este email ya se ha registrado", ""
 	}
 
+	//variable del rol
+	var rol int
+
 	//Creamos un codigo de sesion
 	hour, minute, sec := time.Now().Clock()
 
@@ -340,8 +343,12 @@ func V2_RegisterColaborador_Service(data_idbusiness int, input_anfitrion models.
 	input_anfitrion.Phone = 000000000
 	input_anfitrion.IdCountry = data_country
 
+	if input_anfitrion.IdRol == 0 {
+		rol = 2
+	}
+
 	//Enviamos la variable instanciada al repository
-	idsubworker, error_insert_anfitrion := worker_repository.V2_Pg_Add_Subworker(input_anfitrion)
+	idsubworker, error_insert_anfitrion := worker_repository.V2_Pg_Add_Subworker(input_anfitrion, rol)
 	if error_insert_anfitrion != nil {
 		return 500, true, "Error interno en el servidor al intentar registrar al colaborador, detalle: " + error_insert_anfitrion.Error(), ""
 	}
