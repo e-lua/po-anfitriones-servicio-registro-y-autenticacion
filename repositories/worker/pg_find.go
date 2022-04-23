@@ -289,7 +289,7 @@ func V2_Pg_Find_SubWorkers(idbusiness int) ([]models.V2_Pg_SubWorker, int, error
 	quantity := 0
 
 	db := models.Conectar_Pg_DB()
-	q := "SELECT idworker,idbusiness,name,lastname,email,idrol FROM businessworker WHERE isdeleted=false AND idrol=2 AND idbusiness=$1"
+	q := "SELECT idworker,idbusiness,name,lastname,email,idrol FROM businessworker WHERE isdeleted=false AND idrol<>1 AND idbusiness=$1 ORDER BY idrol DESC"
 	rows, error_query := db.Query(ctx, q, idbusiness)
 
 	//Instanciamos una variable del modelo Pg_SubWorker
@@ -328,4 +328,24 @@ func V2_Pg_Find_SubWorkers_ToWorker(idworker int) (models.V2_Pg_SubWorker, error
 	}
 
 	return subworker_pg, nil
+}
+
+func Pg_Find_Email(idworker int) (string, error) {
+
+	//Tiempo limite al contexto
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	//defer cancelara el contexto
+	defer cancel()
+
+	var emailfound string
+
+	db := models.Conectar_Pg_DB()
+	q := "SELECT email FROM businessworker WHERE idworker=$1"
+	error_query := db.QueryRow(ctx, q, idworker).Scan(&emailfound)
+
+	if error_query != nil {
+		return emailfound, error_query
+	}
+
+	return emailfound, nil
 }

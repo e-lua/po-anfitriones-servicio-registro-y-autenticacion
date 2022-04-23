@@ -52,6 +52,17 @@ func UpdateNameLastName_Service(input_business Entry_Profile, input_idworker int
 	return 201, false, "", "Nombre y apellidos actualizados correctamente"
 }
 
+func UpdateEmail_Service(input_business Entry_Profile, input_idworker int) (int, bool, string, string) {
+
+	//Enviamos la variable instanciada al repository
+	error_update_password := worker_repository.Pg_Update_Email(input_business.Email, input_idworker)
+	if error_update_password != nil {
+		return 500, true, "Error interno en el servidor al intentar actualizar la contraseña, detalle: " + error_update_password.Error(), ""
+	}
+
+	return 201, false, "", "Nombre y apellidos actualizados correctamente"
+}
+
 func UpdatePassword_Service(input_entrydata EntryData_Password, idbusiness int, idcountry int) (int, bool, string, string) {
 
 	//Buscamos la existencia del registro en Pg
@@ -144,6 +155,17 @@ func GetColaborador_Service(input_idbusiness int) (int, bool, string, []models.P
 	return 201, false, "", subworkers
 }
 
+func GetEmail_Service(input_idbusiness int) (int, bool, string, string) {
+
+	//Enviamos la variable instanciada al repository
+	email_found, error_update_password := worker_repository.Pg_Find_Email(input_idbusiness)
+	if error_update_password != nil {
+		return 500, true, "Error interno en el servidor al intentar obtener el email del anfitrion, detalle: " + error_update_password.Error(), email_found
+	}
+
+	return 201, false, "", email_found
+}
+
 /*=======================================*/
 /*===============VERSION 2===============*/
 /*=======================================*/
@@ -153,7 +175,7 @@ func V2_GetColaborador_Service(input_idbusiness int) (int, bool, string, []model
 	//Enviamos la variable instanciada al repository
 	subworkers, _, error_update_password := worker_repository.V2_Pg_Find_SubWorkers(input_idbusiness)
 	if error_update_password != nil {
-		return 500, true, "Error interno en el servidor al intentar eliminar al anfitrion, detalle: " + error_update_password.Error(), subworkers
+		return 500, true, "Error interno en el servidor al intentar obtener los datos del anfitrion, detalle: " + error_update_password.Error(), subworkers
 	}
 
 	return 201, false, "", subworkers
@@ -164,7 +186,7 @@ func V2_GetColaboradorToExport_Service(input_idsubworker int) (int, bool, string
 	//Enviamos la variable instanciada al repository
 	subworker, error_update_password := worker_repository.V2_Pg_Find_SubWorkers_ToWorker(input_idsubworker)
 	if error_update_password != nil {
-		return 500, true, "Error interno en el servidor al intentar eliminar al anfitrion, detalle: " + error_update_password.Error(), subworker
+		return 500, true, "Error interno en el servidor al intentar exportar los datos del anfitrion, detalle: " + error_update_password.Error(), subworker
 	}
 
 	return 201, false, "", subworker

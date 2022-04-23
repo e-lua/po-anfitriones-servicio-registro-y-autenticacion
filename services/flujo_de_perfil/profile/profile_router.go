@@ -97,6 +97,41 @@ func (pr *profileRouter) UpdateNameLastName(c echo.Context) error {
 	return c.JSON(status, results)
 }
 
+func (pr *profileRouter) UpdateEmail(c echo.Context) error {
+
+	//Obtenemos los datos del auth
+	status, boolerror, dataerror, data_idbusiness := GetJWT(c.Request().Header.Get("Authorization"))
+	if dataerror != "" {
+		results := Response_WithString{Error: boolerror, DataError: dataerror, Data: ""}
+		return c.JSON(status, results)
+	}
+	if data_idbusiness <= 0 {
+		results := Response_WithString{Error: true, DataError: "Token incorrecto", Data: ""}
+		return c.JSON(400, results)
+	}
+
+	//Instanciamos una variable del modelo Code
+	var anfitrion Entry_Profile
+
+	//Agregamos los valores enviados a la variable creada
+	err := c.Bind(&anfitrion)
+	if err != nil {
+		results := Response_WithString{Error: true, DataError: "Se debe enviar los datos del pais, nombre, apellido y contraseña del anfitrion, revise la estructura o los valores", Data: ""}
+		return c.JSON(400, results)
+	}
+
+	//Validamos los valores enviados
+	if len(anfitrion.Email) < 1 && len(anfitrion.Email) > 100 {
+		results := Response_WithString{Error: true, DataError: "El valor ingresado no cumple con la regla de negocio", Data: ""}
+		return c.JSON(400, results)
+	}
+
+	//Enviamos los datos al servicio
+	status, boolerror, dataerror, data := UpdateEmail_Service(anfitrion, data_idbusiness)
+	results := Response_WithString{Error: boolerror, DataError: dataerror, Data: data}
+	return c.JSON(status, results)
+}
+
 func (pr *profileRouter) UpdatePassword(c echo.Context) error {
 
 	//Obtenemos los datos del auth
@@ -208,6 +243,40 @@ func (pr *profileRouter) GetColaborador(c echo.Context) error {
 	//Enviamos los datos al servicio
 	status, boolerror, dataerror, data := GetColaborador_Service(data_idbusiness)
 	results := Response_SubWorkers{Error: boolerror, DataError: dataerror, Data: data}
+	return c.JSON(status, results)
+}
+
+func (pr *profileRouter) GetEmail(c echo.Context) error {
+
+	//Obtenemos los datos del auth
+	status, boolerror, dataerror, data_idrol := GetJWTRol(c.Request().Header.Get("Authorization"))
+	if dataerror != "" {
+		results := Response_WithString{Error: boolerror, DataError: dataerror, Data: ""}
+		return c.JSON(status, results)
+	}
+	if data_idrol <= 0 {
+		results := Response_WithString{Error: true, DataError: "Token incorrecto", Data: ""}
+		return c.JSON(400, results)
+	}
+	if data_idrol != 1 {
+		results := Response_WithString{Error: true, DataError: "Este rol no puede listar colaboradores", Data: ""}
+		return c.JSON(403, results)
+	}
+
+	//Obtenemos los datos del auth
+	status, boolerror, dataerror, data_idbusiness := GetJWT(c.Request().Header.Get("Authorization"))
+	if dataerror != "" {
+		results := Response_WithString{Error: boolerror, DataError: dataerror, Data: ""}
+		return c.JSON(status, results)
+	}
+	if data_idbusiness <= 0 {
+		results := Response_WithString{Error: true, DataError: "Token incorrecto", Data: ""}
+		return c.JSON(400, results)
+	}
+
+	//Enviamos los datos al servicio
+	status, boolerror, dataerror, data := GetEmail_Service(data_idbusiness)
+	results := Response_WithString{Error: boolerror, DataError: dataerror, Data: data}
 	return c.JSON(status, results)
 }
 

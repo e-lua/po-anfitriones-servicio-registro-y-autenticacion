@@ -55,6 +55,7 @@ type EntryData_Password struct {
 type Entry_Profile struct {
 	Name     string `json:"name"`
 	LastName string `json:"lastname"`
+	Email    string `json:"email"`
 }
 
 type Input_IDDevice struct {

@@ -41,6 +41,23 @@ func Pg_Update_NameLastName(name string, lastname string, idworker int) error {
 	return nil
 }
 
+func Pg_Update_Email(email string, idworker int) error {
+
+	//Tiempo limite al contexto
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	//defer cancelara el contexto
+	defer cancel()
+
+	db := models.Conectar_Pg_DB()
+
+	query := `UPDATE businessworker SET email=$1,isexported=false,updateddate=$2 WHERE idworker=$3`
+	if _, err_update := db.Exec(ctx, query, email, time.Now(), idworker); err_update != nil {
+		return err_update
+	}
+
+	return nil
+}
+
 func Pg_Update_IdBusiness(idworker int) error {
 
 	//Tiempo limite al contexto
@@ -77,7 +94,7 @@ func Pg_Update_QtyCodesRegistered(phonenumber int, country int) error {
 
 func Pg_Update_Password_Recovery(password string, phone int, code int, sessioncode int) error {
 
-	//Tiempo limite al contexto
+	//Tiempo limite al contextos
 	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 	//defer cancelara el contexto
 	defer cancel()
