@@ -283,6 +283,9 @@ func RegisterColaborador_Service(data_idbusiness int, input_anfitrion models.Pg_
 	//Creamos un codigo de sesion
 	hour, minute, sec := time.Now().Clock()
 
+	//Variable para asignar el rol
+	var rol int
+
 	//Encriptar password
 	encrypted_pass, _ := encrypt(input_anfitrion.Password)
 	input_anfitrion.Password = encrypted_pass
@@ -290,8 +293,14 @@ func RegisterColaborador_Service(data_idbusiness int, input_anfitrion models.Pg_
 	input_anfitrion.SessionCode = minute*100 + sec + hour + 1111 + rand.Intn(7483647)
 	input_anfitrion.IdBusiness = data_idbusiness
 
+	if input_anfitrion.IdRol == 0 {
+		rol = 2
+	} else {
+		rol = 3
+	}
+
 	//Enviamos la variable instanciada al repository
-	idsubworker, error_insert_anfitrion := worker_repository.Pg_Add_Subworker(input_anfitrion)
+	idsubworker, error_insert_anfitrion := worker_repository.Pg_Add_Subworker(rol, input_anfitrion)
 	if error_insert_anfitrion != nil {
 		return 500, true, "Error interno en el servidor al intentar registrar al colaborador, detalle: " + error_insert_anfitrion.Error(), ""
 	}
