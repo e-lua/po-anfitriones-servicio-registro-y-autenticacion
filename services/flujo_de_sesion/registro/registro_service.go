@@ -354,10 +354,12 @@ func V2_RegisterColaborador_Service(data_idbusiness int, input_anfitrion models.
 
 	if input_anfitrion.IdRol == 0 {
 		rol = 2
+	} else {
+		rol = 3
 	}
 
 	//Enviamos la variable instanciada al repository
-	idsubworker, error_insert_anfitrion := worker_repository.V2_Pg_Add_Subworker(input_anfitrion, rol)
+	idsubworker, error_insert_anfitrion := worker_repository.V2_Pg_Add_Subworker(rol, input_anfitrion)
 	if error_insert_anfitrion != nil {
 		return 500, true, "Error interno en el servidor al intentar registrar al colaborador, detalle: " + error_insert_anfitrion.Error(), ""
 	}
