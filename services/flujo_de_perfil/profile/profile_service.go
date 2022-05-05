@@ -41,21 +41,10 @@ func encrypt(input string) (string, error) {
 
 /*-------------------------------FUNCIONES PUBLICAS-------------------------------*/
 
-func UpdateNameLastName_Service(input_business Entry_Profile, input_idworker int) (int, bool, string, string) {
+func UpdateNameLastNameEmail_Service(input_business Entry_Profile, input_idworker int) (int, bool, string, string) {
 
 	//Enviamos la variable instanciada al repository
-	error_update_password := worker_repository.Pg_Update_NameLastName(input_business.Name, input_business.LastName, input_idworker)
-	if error_update_password != nil {
-		return 500, true, "Error interno en el servidor al intentar actualizar la contraseña, detalle: " + error_update_password.Error(), ""
-	}
-
-	return 201, false, "", "Nombre y apellidos actualizados correctamente"
-}
-
-func UpdateEmail_Service(input_business Entry_Profile, input_idworker int) (int, bool, string, string) {
-
-	//Enviamos la variable instanciada al repository
-	error_update_password := worker_repository.Pg_Update_Email(input_business.Email, input_idworker)
+	error_update_password := worker_repository.Pg_Update_NameLastNameEmail(input_business.Name, input_business.LastName, input_business.Email, input_idworker)
 	if error_update_password != nil {
 		return 500, true, "Error interno en el servidor al intentar actualizar la contraseña, detalle: " + error_update_password.Error(), ""
 	}

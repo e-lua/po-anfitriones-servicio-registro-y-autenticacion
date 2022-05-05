@@ -24,7 +24,7 @@ func Pg_Update_Password(password string, idbusiness int) error {
 	return nil
 }
 
-func Pg_Update_NameLastName(name string, lastname string, idworker int) error {
+func Pg_Update_NameLastNameEmail(name string, lastname string, email string, idworker int) error {
 
 	//Tiempo limite al contexto
 	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
@@ -33,25 +33,8 @@ func Pg_Update_NameLastName(name string, lastname string, idworker int) error {
 
 	db := models.Conectar_Pg_DB()
 
-	query := `UPDATE businessworker SET name=$1,lastname=$2, updateddate=$3 WHERE idworker=$4`
-	if _, err_update := db.Exec(ctx, query, name, lastname, time.Now(), idworker); err_update != nil {
-		return err_update
-	}
-
-	return nil
-}
-
-func Pg_Update_Email(email string, idworker int) error {
-
-	//Tiempo limite al contexto
-	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
-	//defer cancelara el contexto
-	defer cancel()
-
-	db := models.Conectar_Pg_DB()
-
-	query := `UPDATE businessworker SET email=$1,isexported=false,updateddate=$2 WHERE idworker=$3`
-	if _, err_update := db.Exec(ctx, query, email, time.Now(), idworker); err_update != nil {
+	query := `UPDATE businessworker SET name=$1,lastname=$2,email=$3,updateddate=$4 WHERE idworker=$5`
+	if _, err_update := db.Exec(ctx, query, name, lastname, email, time.Now(), idworker); err_update != nil {
 		return err_update
 	}
 

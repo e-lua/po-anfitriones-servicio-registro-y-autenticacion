@@ -57,8 +57,7 @@ func Manejadores() {
 	router_anfitrion_v1 := version_1.Group("/worker")
 	router_anfitrion_v1.POST("", register.RegisterRouter.RegisterAnfitrion)
 	router_anfitrion_v1.PUT("/password", profile.ProfileRouter.UpdatePassword)
-	router_anfitrion_v1.PUT("/profile", profile.ProfileRouter.UpdateNameLastName)
-	router_anfitrion_v1.PUT("/email", profile.ProfileRouter.UpdateEmail)
+	router_anfitrion_v1.PUT("/profile", profile.ProfileRouter.UpdateNameLastNameEmail)
 	router_anfitrion_v1.GET("/email", profile.ProfileRouter.GetEmail)
 	router_anfitrion_v1.DELETE("", profile.ProfileRouter.DeleteAnfitrion)
 
