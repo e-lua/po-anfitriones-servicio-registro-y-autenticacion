@@ -34,12 +34,13 @@ func generateJWT(anfitrion models.Pg_BusinessWorker) (string, error) {
 	miClave := []byte("TokenGeneradorRestoner")
 
 	payload := jwt.MapClaims{
-		"business":    anfitrion.IdBusiness,
-		"worker":      anfitrion.IdWorker,
-		"rol":         anfitrion.IdRol,
-		"country":     anfitrion.IdCountry,
-		"sessioncode": anfitrion.SessionCode,
-		"exp":         time.Now().Add(time.Hour * 1460).Unix(),
+		"business":        anfitrion.IdBusiness,
+		"worker":          anfitrion.IdWorker,
+		"rol":             anfitrion.IdRol,
+		"country":         anfitrion.IdCountry,
+		"typesuscription": anfitrion.TypeSuscription,
+		"sessioncode":     anfitrion.SessionCode,
+		"exp":             time.Now().Add(time.Hour * 1460).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
@@ -183,6 +184,7 @@ func Login_Service(inputanfitrion models.Pg_BusinessWorker) (int, bool, string, 
 	jwt_and_rol.Name = worker_found.Name
 	jwt_and_rol.Lastname = worker_found.LastName
 	jwt_and_rol.ID = worker_found.IdBusiness
+	jwt_and_rol.TypeSuscription = worker_found.TypeSuscription
 
 	return 201, false, "", jwt_and_rol
 }
