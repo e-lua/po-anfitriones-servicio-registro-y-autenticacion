@@ -218,7 +218,7 @@ func (pr *profileRouter) GetColaborador(c echo.Context) error {
 func (pr *profileRouter) GetEmail(c echo.Context) error {
 
 	//Obtenemos los datos del auth
-	status, boolerror, dataerror, data_idbusiness := GetJWT(c.Request().Header.Get("Authorization"))
+	status, boolerror, dataerror, data_idbusiness := GetJWT(c.Request().URL.Query().Get("Authorization"))
 	if dataerror != "" {
 		results := Response_WithString{Error: boolerror, DataError: dataerror, Data: ""}
 		return c.JSON(status, results)
