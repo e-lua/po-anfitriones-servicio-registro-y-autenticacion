@@ -1,17 +1,13 @@
 version: "3.3"
 
 services: 
-  app:
-    container_name: restonercomensales_app_servicio_auth_registro
+  a-registro-authenticacion:
     restart: always 
     build: .
     labels: 
-      - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`localhost`)"
+      - "traefik.http.routers.a-informacion.rule=Host(`a-registro-authenticacion.restoner-api.fun`)"
     networks:
       - backend
-    ports:
-      - "5000:5000"
     links:
       - redis
       - postgres
@@ -50,19 +46,16 @@ services:
       - postgres
   traefik: # apache.app.test - nginx.app.test
     image: traefik:v2.3.6
-    labels: 
-      - "traefik.http.routers.api.rule=Host(`localhost`)"
     ports: 
-      - 100:80
-      - 8052:8080
+      - 80:80
       - 443:443
     volumes: 
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik.yml:/traefik.yml
       - ./acme.json:/acme.json
-
     networks: 
       backend:
+
 networks:
   backend:
     driver: bridge
