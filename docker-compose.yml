@@ -11,31 +11,24 @@ services:
     links:
       - redis-master
       - postgres-master
-  redis-master:
-    image: 'bitnami/redis:latest'
+  redis:
+    image: redis:5.0.0
+    container_name: master
     ports:
-      - '6379'
+      - "6379:6379"
     networks:
       - backend
-    environment:
-      - REDIS_REPLICATION_MODE=master
-      - REDIS_PASSWORD=dfgfgq4356qdfgawet52q345
-    volumes:
-      - '/path/to/redis-persistence:/bitnami'
-  redis-replica:
-    image: 'bitnami/redis:latest'
+
+  redis-slave:
+    image: redis:5.0.0
+    container_name: slave
     ports:
-      - '8000:6379'
+      - "6380:6379"
+    command: redis-server --slaveof master 6379
     depends_on:
-      - redis-master
+      - redis
     networks:
       - backend
-    environment:
-      - REDIS_REPLICATION_MODE=slave
-      - REDIS_MASTER_HOST=redis-master
-      - REDIS_MASTER_PORT_NUMBER=6379
-      - REDIS_MASTER_PASSWORD=dfgfgq4356qdfgawet52q345
-      - REDIS_PASSWORD=dfgfgq4356qdfgawet52q345
   postgres-master:
     container_name: postgres_db
     restart: always
