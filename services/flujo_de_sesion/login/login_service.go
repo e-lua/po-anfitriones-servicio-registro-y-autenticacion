@@ -90,12 +90,12 @@ func TryingLogin_Service(inpuToken string, inputService string, inputModule stri
 			}
 
 			if error_get_re != nil {
-				_, error_findworker := worker_reposiroty.Pg_Find_ById(claims.Business, claims.Country)
+				idworker, error_findworker := worker_reposiroty.Pg_Find_ById_TryLogin(claims.Worker, claims.Country)
 				if error_findworker != nil {
 					return anfitrionjwt, true, "N", error_findworker.Error()
 				}
 				//Registramos en Redis
-				_, err_add_re := worker_reposiroty.Re_Set_ID(claims.Worker, claims.Country, claims.SessionCode, claims.Business)
+				_, err_add_re := worker_reposiroty.Re_Set_ID(idworker, claims.Country, claims.SessionCode, claims.Business)
 				if err_add_re != nil {
 					return anfitrionjwt, true, "N", err_add_re.Error()
 				}

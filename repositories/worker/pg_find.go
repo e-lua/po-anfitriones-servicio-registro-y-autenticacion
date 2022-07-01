@@ -8,6 +8,25 @@ import (
 	models "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/models"
 )
 
+func Pg_Find_ById_TryLogin(idworker int, idcountry int) (int, error) {
+
+	//Tiempo limite al contexto
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	//defer cancelara el contexto
+	defer cancel()
+
+	var idworker_output int
+
+	db := models.Conectar_Pg_DB()
+	q := `SELECT idworker FROM BusinessWorker WHERE idworker=$1 AND idcountry=$2 LIMIT 1`
+	error_show := db.QueryRow(ctx, q, idworker, idcountry).Scan(&idworker_output)
+	if error_show != nil {
+		return idworker_output, error_show
+	}
+
+	return idworker_output, nil
+}
+
 func Pg_Find_ById(idbusiness int, idcountry int) (int, error) {
 
 	//Tiempo limite al contexto
