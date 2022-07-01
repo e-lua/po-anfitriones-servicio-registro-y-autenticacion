@@ -22,13 +22,14 @@ func GetConn() *redis.Pool {
 	once.Do(func() {
 		p = &redis.Pool{
 			Dial: func() (redis.Conn, error) {
-				/*conn, err := redis.Dial("tcp", "redis:6379")
+				conn, err := redis.Dial("tcp", "redis-master:6379")
 				if err != nil {
 					log.Fatal("ERROR: No se puede conectar con Redis")
-				}*/
-				conn, err := redis.DialURL("redis://dfgfgq4356qdfgawet52q345@redis-master:6379")
-				if err != nil {
-					log.Fatal("ERROR: No se puede conectar con Redis")
+				}
+
+				if _, err := conn.Do("AUTH", "dfgfgq4356qdfgawet52q345"); err != nil {
+					conn.Close()
+					return nil, err
 				}
 
 				return conn, err
