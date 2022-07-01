@@ -119,6 +119,12 @@ func DeleteColaborador_Service(input_idsubworker int) (int, bool, string, string
 		return 500, true, "Error interno en el servidor al intentar eliminar al anfitrion, detalle: " + error_update_password.Error(), ""
 	}
 
+	//Registramos en Redis
+	err_add_re := worker_repository.Re_Set_Email(input_idsubworker, 12411451345, 2)
+	if err_add_re != nil {
+		return 500, true, "Error en el servidor interno al intentar cambiar el codigo para evitar el ingreso del subworker eliminado, detalle: " + err_add_re.Error(), ""
+	}
+
 	return 201, false, "", "Colaborador eliminado correctamente"
 }
 

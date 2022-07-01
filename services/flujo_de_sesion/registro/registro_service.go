@@ -359,16 +359,16 @@ func V2_RegisterColaborador_Service(data_idbusiness int, input_anfitrion models.
 	}
 
 	//Enviamos la variable instanciada al repository
-	_, error_insert_anfitrion := worker_repository.V2_Pg_Add_Subworker(rol, input_anfitrion)
+	idsubworker, error_insert_anfitrion := worker_repository.V2_Pg_Add_Subworker(rol, input_anfitrion)
 	if error_insert_anfitrion != nil {
 		return 500, true, "Error interno en el servidor al intentar registrar al colaborador, detalle: " + error_insert_anfitrion.Error(), ""
 	}
 
 	//Registramos en Redis
-	/*err_add_re := worker_repository.Re_Set_Email(idsubworker, input_anfitrion.SessionCode, 2)
+	err_add_re := worker_repository.Re_Set_Email(idsubworker, input_anfitrion.SessionCode, 2)
 	if err_add_re != nil {
 		return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), ""
-	}*/
+	}
 
 	/*--SENT NOTIFICATION--*/
 	notification := map[string]interface{}{
