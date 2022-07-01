@@ -120,7 +120,7 @@ func DeleteColaborador_Service(input_idsubworker int, data_idrol int, data_idcou
 	}
 
 	//Registramos en Redis
-	_, err_add_re := worker_repository.Re_Set_ID(input_idsubworker, data_idcountry, 12411451345, data_idbusines)
+	err_add_re := worker_repository.Re_Set_Email(input_idsubworker, 12411451345, data_idrol)
 	if err_add_re != nil {
 		return 500, true, "Error en el servidor interno al intentar cambiar el codigo para evitar el ingreso del subworker eliminado, detalle: " + err_add_re.Error(), ""
 	}

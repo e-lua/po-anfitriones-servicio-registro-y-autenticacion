@@ -104,7 +104,7 @@ func TryingLogin_Service(inpuToken string, inputService string, inputModule stri
 
 		if claims.IDRol == 2 {
 			//Buscamos la existencia del registro en Pg - Redis
-			idbusiness_and_sessioncode, error_get_re := worker_reposiroty.Re_Get_Email(claims.Worker, claims.SessionCode, 2)
+			idbusiness_and_sessioncode, error_get_re := worker_reposiroty.Re_Get_Email(claims.Worker, claims.SessionCode, claims.IDRol)
 			if idbusiness_and_sessioncode != strconv.Itoa(claims.Worker)+strconv.Itoa(claims.SessionCode)+strconv.Itoa(2) {
 				return anfitrionjwt, true, "N", "sesion inválida"
 			}
@@ -260,7 +260,7 @@ func V2_Login_Service(input_login Input_BusinessWorker_login) (int, bool, string
 		}
 
 		//Registramos en Redis
-		err_add_re := worker_reposiroty.Re_Set_Email(subworker_found.IdWorker, subworker_found.SessionCode, 2)
+		err_add_re := worker_reposiroty.Re_Set_Email(subworker_found.IdWorker, subworker_found.SessionCode, subworker_found.IdRol)
 		if err_add_re != nil {
 			return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), jwt_and_rol
 		}
