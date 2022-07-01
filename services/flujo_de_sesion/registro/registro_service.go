@@ -352,7 +352,7 @@ func V2_RegisterColaborador_Service(data_idbusiness int, input_anfitrion models.
 	input_anfitrion.Phone = 000000000
 	input_anfitrion.IdCountry = data_country
 
-	if input_anfitrion.IdRol == 0 {
+	if input_anfitrion.IdRol == 0 || input_anfitrion.IdRol == 2 {
 		rol = 2
 	} else {
 		rol = 3
@@ -365,7 +365,7 @@ func V2_RegisterColaborador_Service(data_idbusiness int, input_anfitrion models.
 	}
 
 	//Registramos en Redis
-	err_add_re := worker_repository.Re_Set_Email(idsubworker, input_anfitrion.SessionCode, 2)
+	err_add_re := worker_repository.Re_Set_Email(idsubworker, input_anfitrion.SessionCode, input_anfitrion.IdRol)
 	if err_add_re != nil {
 		return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), ""
 	}

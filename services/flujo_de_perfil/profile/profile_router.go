@@ -49,6 +49,17 @@ func GetJWTRol(jwt string) (int, bool, string, int) {
 	return 200, false, "", get_respuesta.Data.IdRol
 }
 
+func GetJWTRol_Country_Business(jwt string) (int, bool, string, int, int, int) {
+	//Obtenemos los datos del auth
+	respuesta, _ := http.Get("http://localhost:5000/v1/trylogin?jwt=" + jwt)
+	var get_respuesta ResponseJWT
+	error_decode_respuesta := json.NewDecoder(respuesta.Body).Decode(&get_respuesta)
+	if error_decode_respuesta != nil {
+		return 500, true, "Error en el sevidor interno al intentar decodificar la autenticacion, detalles: " + error_decode_respuesta.Error(), 0, 0, 0
+	}
+	return 200, false, "", get_respuesta.Data.IdRol, get_respuesta.Data.IdCountry, get_respuesta.Data.IdBusiness
+}
+
 func GetJWTSubWorker(jwt string) (int, bool, string, int) {
 	//Obtenemos los datos del auth
 	respuesta, _ := http.Get("http://localhost:5000/v1/trylogin?jwt=" + jwt)
@@ -158,7 +169,7 @@ func (pr *profileRouter) DeleteAnfitrion(c echo.Context) error {
 func (pr *profileRouter) DeleteColaborador(c echo.Context) error {
 
 	//Obtenemos los datos del auth
-	status, boolerror, dataerror, data_idrol := GetJWTRol(c.Request().Header.Get("Authorization"))
+	status, boolerror, dataerror, data_idrol, data_idcountry, data_idbusines := GetJWTRol_Country_Business(c.Request().Header.Get("Authorization"))
 	if dataerror != "" {
 		results := Response_WithString{Error: boolerror, DataError: dataerror, Data: ""}
 		return c.JSON(status, results)
@@ -176,7 +187,7 @@ func (pr *profileRouter) DeleteColaborador(c echo.Context) error {
 	idsubworker_int, _ := strconv.Atoi(idsubworker)
 
 	//Enviamos los datos al servicio
-	status, boolerror, dataerror, data := DeleteColaborador_Service(idsubworker_int)
+	status, boolerror, dataerror, data := DeleteColaborador_Service(idsubworker_int, data_idrol, data_idcountry, data_idbusines)
 	results := Response_WithString{Error: boolerror, DataError: dataerror, Data: data}
 	return c.JSON(status, results)
 }

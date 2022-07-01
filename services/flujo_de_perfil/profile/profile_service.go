@@ -111,7 +111,7 @@ func DeleteAnfitrion_Service(input_idworker int) (int, bool, string, string) {
 	return 201, false, "", "Eliminado correctamente"
 }
 
-func DeleteColaborador_Service(input_idsubworker int) (int, bool, string, string) {
+func DeleteColaborador_Service(input_idsubworker int, data_idrol int, data_idcountry int, data_idbusines int) (int, bool, string, string) {
 
 	//Enviamos la variable instanciada al repository
 	error_update_password := worker_repository.Pg_Delete_SubWorker(input_idsubworker)
@@ -120,7 +120,7 @@ func DeleteColaborador_Service(input_idsubworker int) (int, bool, string, string
 	}
 
 	//Registramos en Redis
-	err_add_re := worker_repository.Re_Set_Email(input_idsubworker, 12411451345, 2)
+	_, err_add_re := worker_repository.Re_Set_ID(input_idsubworker, data_idcountry, 12411451345, data_idbusines)
 	if err_add_re != nil {
 		return 500, true, "Error en el servidor interno al intentar cambiar el codigo para evitar el ingreso del subworker eliminado, detalle: " + err_add_re.Error(), ""
 	}
