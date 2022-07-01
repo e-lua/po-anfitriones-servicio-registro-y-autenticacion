@@ -22,7 +22,7 @@ func GetConn_Slave() *redis.Pool {
 	once_slave.Do(func() {
 		p_slave = &redis.Pool{
 			Dial: func() (redis.Conn, error) {
-				conn, err := redis.Dial("tcp", "redis:6380")
+				conn, err := redis.Dial("tcp", "redis-slave:6380")
 				if err != nil {
 					log.Fatal("ERROR: No se puede conectar con Redis")
 				}
