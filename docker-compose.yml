@@ -9,7 +9,7 @@ services:
     networks:
       - backend
     links:
-      - redis-master
+      - redis
       - postgres-master
   redis:
     image: redis:5.0.0
@@ -18,7 +18,6 @@ services:
       - "6379:6379"
     networks:
       - backend
-
   redis-slave:
     image: redis:5.0.0
     container_name: slave
