@@ -31,7 +31,7 @@ services:
       - REDIS_MASTER_HOST=redis-master
       - REDIS_MASTER_PORT_NUMBER=6379
       - REDIS_MASTER_PASSWORD=dfgfgq4356qdfgawet52q345
-      - REDIS_PASSWORD=2f453efdgw36er6edfgdfg
+      - REDIS_PASSWORD=dfgfgq4356qdfgawet52q345
   postgres-master:
     container_name: postgres_db
     restart: always
