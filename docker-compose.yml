@@ -9,9 +9,9 @@ services:
     networks:
       - backend
     links:
-      - redis-master
+      - redis
       - postgres-master
-  redis-master:
+  redis:
     image: 'bitnami/redis:latest'
     ports:
       - '6379'
@@ -25,10 +25,10 @@ services:
     ports:
       - '8000:6379'
     depends_on:
-      - redis-master
+      - redis
     environment:
       - REDIS_REPLICATION_MODE=slave
-      - REDIS_MASTER_HOST=redis-master
+      - REDIS_MASTER_HOST=redis
       - REDIS_MASTER_PORT_NUMBER=6379
       - ALLOW_EMPTY_PASSWORD=yes
   postgres-master:
