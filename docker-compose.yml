@@ -35,7 +35,7 @@ services:
   postgres-master:
     container_name: postgres_db
     restart: always
-    image: "postgres:13"
+    image: 'bitnami/postgresql:14.4.0'
     networks:
       - backend
     ports:
