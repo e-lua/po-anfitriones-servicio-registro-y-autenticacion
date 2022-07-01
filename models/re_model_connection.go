@@ -19,9 +19,6 @@ var (
 )
 
 func GetConn() *redis.Pool {
-	p.MaxIdle = 20
-	p.MaxActive = 20
-	p.IdleTimeout = 240
 	once.Do(func() {
 		p = &redis.Pool{
 			Dial: func() (redis.Conn, error) {
