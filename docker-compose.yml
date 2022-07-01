@@ -5,33 +5,66 @@ services:
     restart: always 
     build: .
     labels: 
-      - "traefik.http.routers.a-informacion.rule=Host(`a-registro-authenticacion.restoner-api.fun`)"
+      - "traefik.http.routers.a-registro-authenticacion.rule=Host(`a-registro-authenticacion.restoner-api.fun`)"
     networks:
       - backend
     links:
-      - redis
-      - postgres
-  redis:
-    container_name: redis_db
-    restart: always
-    image: "redis:6.0.16"
-    networks:
-      - backend
-    ports: 
-      - "6000:6379"
-  postgres:
+      - redis-master
+      - postgres-master
+  redis-master:
+    image: 'bitnami/redis:latest'
+    ports:
+      - '6379'
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_PASSWORD=dfgfgq4356qdfgawet52q345
+    volumes:
+      - '/path/to/redis-persistence:/bitnami'
+  redis-replica:
+    image: 'bitnami/redis:latest'
+    ports:
+      - '8000:6379'
+    depends_on:
+      - redis-master
+    environment:
+      - REDIS_REPLICATION_MODE=slave
+      - REDIS_MASTER_HOST=redis-master
+      - REDIS_MASTER_PORT_NUMBER=6379
+      - REDIS_MASTER_PASSWORD=dfgfgq4356qdfgawet52q345
+      - REDIS_PASSWORD=2f453efdgw36er6edfgdfg
+  postgres-master:
     container_name: postgres_db
     restart: always
     image: "postgres:13"
     networks:
       - backend
     ports:
-      - "7000:5432"
+      - "5432"
+    volumes:
+      - 'postgresql_master_data:/bitnami/postgresql'
     environment:
+      - POSTGRESQL_REPLICATION_MODE=master
       - DATABASE_HOST=127.0.0.1
-      - POSTGRES_USER=postgresx
-      - POSTGRES_PASSWORD=adsfg465WFVFGdsrf3465QWFDSFGH4fsadf4fwedf
-      - POSTGRES_DB=postgresx
+      - POSTGRESQL_REPLICATION_USER=replicacion_usuari4123o_123
+      - POSTGRESQL_REPLICATION_PASSWORD=replicacion_contrasenia_asda21qdac2123
+      - POSTGRESQL_USERNAME=postgresx
+      - POSTGRESQL_PASSWORD=adsfg465WFVFGdsrf3465QWFDSFGH4fsadf4fwedf
+      - POSTGRESQL_DATABASE=postgresx
+  postgresql-slave:
+    image: 'bitnami/postgresql:14.4.0'
+    ports:
+      - "6432:5432"
+    networks:
+      - backend
+    depends_on:
+      - postgres-master
+    environment:
+      - POSTGRESQL_REPLICATION_MODE=slave
+      - POSTGRESQL_REPLICATION_USER=replicacion_usuari4123o_123
+      - POSTGRESQL_REPLICATION_PASSWORD=replicacion_contrasenia_asda21qdac2123
+      - POSTGRESQL_MASTER_HOST=postgres-master
+      - POSTGRESQL_PASSWORD=adsfg465WFVFGdsrf3465QWFDSFGH4fsadf4fwedf
+      - POSTGRESQL_MASTER_PORT_NUMBER=5432
   pgadmin:
     restart: always
     image: "dpage/pgadmin4"
@@ -43,8 +76,8 @@ services:
       PGADMIN_DEFAULT_EMAIL: adminx@adminx.com
       PGADMIN_DEFAULT_PASSWORD: dsgojq02934jMG4GG436gdgfG346FD
     depends_on:
-      - postgres
-  traefik: # apache.app.test - nginx.app.test
+      - postgres-master
+  traefik:
     image: traefik:v2.3.6
     ports: 
       - 80:80
@@ -53,8 +86,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik.yml:/traefik.yml
       - ./acme.json:/acme.json
-    networks: 
-      backend:
+    networks:
+      - backend
 
 networks:
   backend:
@@ -62,7 +95,8 @@ networks:
     ipam: 
       driver: default 
 
-
+volumes:
+  postgresql_master_data:
 
 
 
