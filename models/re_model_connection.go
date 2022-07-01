@@ -19,8 +19,8 @@ var (
 )
 
 func GetConn() *redis.Pool {
-	p.MaxIdle = 10
-	p.MaxActive = 10
+	p.MaxIdle = 20
+	p.MaxActive = 20
 	p.IdleTimeout = 240
 	once.Do(func() {
 		p = &redis.Pool{

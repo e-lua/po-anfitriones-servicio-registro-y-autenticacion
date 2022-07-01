@@ -10,7 +10,7 @@ services:
       - backend
     links:
       - redis-master
-      - postgres
+      - postgres-master
   redis-master:
     image: 'bitnami/redis:latest'
     ports:
@@ -32,7 +32,7 @@ services:
       - REDIS_MASTER_PORT_NUMBER=6379
       - REDIS_MASTER_PASSWORD=dfgfgq4356qdfgawet52q345
       - REDIS_PASSWORD=2f453efdgw36er6edfgdfg
-  postgres:
+  postgres-master:
     container_name: postgres_db
     restart: always
     image: 'bitnami/postgresql:14.4.0'
@@ -57,12 +57,12 @@ services:
     networks:
       - backend
     depends_on:
-      - postgres
+      - postgres-master
     environment:
       - POSTGRESQL_REPLICATION_MODE=slave
       - POSTGRESQL_REPLICATION_USER=replicacion_usuari4123o_123
       - POSTGRESQL_REPLICATION_PASSWORD=replicacion_contrasenia_asda21qdac2123
-      - POSTGRESQL_MASTER_HOST=postgres
+      - POSTGRESQL_MASTER_HOST=postgres-master
       - POSTGRESQL_PASSWORD=adsfg465WFVFGdsrf3465QWFDSFGH4fsadf4fwedf
       - POSTGRESQL_MASTER_PORT_NUMBER=5432
   pgadmin:
@@ -76,7 +76,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: adminx@adminx.com
       PGADMIN_DEFAULT_PASSWORD: dsgojq02934jMG4GG436gdgfG346FD
     depends_on:
-      - postgres
+      - postgres-master
   traefik:
     image: traefik:v2.3.6
     ports: 
