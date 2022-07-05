@@ -11,6 +11,9 @@ services:
     links:
       - redis
       - postgres-master
+      - postgresql-slave
+      - redis-slave
+      - redis-slave-2
   redis:
     image: redis:5.0.0
     container_name: master
@@ -23,6 +26,16 @@ services:
     container_name: slave
     ports:
       - "6380:6379"
+    command: redis-server --slaveof master 6379
+    depends_on:
+      - redis
+    networks:
+      - backend
+  redis-slave-2:
+    image: redis:5.0.0
+    container_name: slave-2
+    ports:
+      - "6390:6379"
     command: redis-server --slaveof master 6379
     depends_on:
       - redis

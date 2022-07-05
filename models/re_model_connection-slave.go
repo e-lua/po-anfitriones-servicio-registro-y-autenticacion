@@ -2,6 +2,7 @@ package models
 
 import (
 	"log"
+	"math/rand"
 	"sync"
 
 	"github.com/gomodule/redigo/redis"
@@ -22,7 +23,16 @@ func GetConn_Slave() *redis.Pool {
 	once_slave.Do(func() {
 		p_slave = &redis.Pool{
 			Dial: func() (redis.Conn, error) {
-				conn, err := redis.Dial("tcp", "redis-slave:6380")
+
+				var conn redis.Conn
+				var err error
+				random := rand.Intn(4)
+				if random%2 == 0 {
+					conn, err = redis.Dial("tcp", "redis-slave:6379")
+				} else {
+					conn, err = redis.Dial("tcp", "redis-slave-2:6379")
+				}
+
 				if err != nil {
 					log.Fatal("ERROR: No se puede conectar con Redis")
 				}
