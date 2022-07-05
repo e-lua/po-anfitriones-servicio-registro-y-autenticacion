@@ -2,12 +2,10 @@ package repositories
 
 import (
 	"context"
-	"math/rand"
 	"strconv"
 	"time"
 
 	models "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/models"
-	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 func Pg_Find_ById_TryLogin(idworker int, idcountry int) (int, error) {
@@ -18,14 +16,8 @@ func Pg_Find_ById_TryLogin(idworker int, idcountry int) (int, error) {
 	defer cancel()
 
 	var idworker_output int
-	var db *pgxpool.Pool
 
-	random := rand.Intn(4)
-	if random%2 == 0 {
-		db = models.Conectar_Pg_DB()
-	} else {
-		db = models.Conectar_Pg_DB_Slave()
-	}
+	db := models.Conectar_Pg_DB()
 
 	q := `SELECT idworker FROM BusinessWorker WHERE idworker=$1 AND idcountry=$2 LIMIT 1`
 	error_show := db.QueryRow(ctx, q, idworker, idcountry).Scan(&idworker_output)
@@ -44,14 +36,8 @@ func Pg_Find_ById(idbusiness int, idcountry int) (int, error) {
 	defer cancel()
 
 	var idbusiness_q int
-	var db *pgxpool.Pool
 
-	random := rand.Intn(4)
-	if random%2 == 0 {
-		db = models.Conectar_Pg_DB()
-	} else {
-		db = models.Conectar_Pg_DB_Slave()
-	}
+	db := models.Conectar_Pg_DB()
 
 	q := `SELECT idbusiness FROM BusinessWorker WHERE idbusiness=$1 AND idcountry=$2 LIMIT 1`
 	error_show := db.QueryRow(ctx, q, idbusiness, idcountry).Scan(&idbusiness_q)
@@ -72,14 +58,8 @@ func Pg_FindByPhone(phone int, idcountry int) (models.Pg_BusinessWorker, error) 
 	defer cancel()
 
 	var anfitrion models.Pg_BusinessWorker
-	var db *pgxpool.Pool
 
-	random := rand.Intn(4)
-	if random%2 == 0 {
-		db = models.Conectar_Pg_DB()
-	} else {
-		db = models.Conectar_Pg_DB_Slave()
-	}
+	db := models.Conectar_Pg_DB()
 
 	q := `SELECT idbusiness,idworker,idcountry,idrol,phone,password,name,lastname,isbanned,sessioncode,isdeleted,iddevice FROM BusinessWorker WHERE phone=$1 AND idcountry=$2 AND  isdeleted=false LIMIT 1`
 	error_show := db.QueryRow(ctx, q, phone, idcountry).Scan(&anfitrion.IdBusiness, &anfitrion.IdWorker, &anfitrion.IdCountry, &anfitrion.IdRol, &anfitrion.Phone, &anfitrion.Password, &anfitrion.Name, &anfitrion.LastName, &anfitrion.Isbanned, &anfitrion.SessionCode, &anfitrion.IsDeleted, &anfitrion.IDDevice)
@@ -100,14 +80,8 @@ func Pg_FindPassword_ById(idbusiness int) (string, int, error) {
 
 	var pass string
 	var idworker int
-	var db *pgxpool.Pool
 
-	random := rand.Intn(4)
-	if random%2 == 0 {
-		db = models.Conectar_Pg_DB()
-	} else {
-		db = models.Conectar_Pg_DB_Slave()
-	}
+	db := models.Conectar_Pg_DB()
 
 	q := "SELECT password,idworker FROM BusinessWorker WHERE idbusiness=$1"
 	error_showname := db.QueryRow(ctx, q, idbusiness).Scan(&pass, &idworker)
@@ -129,14 +103,8 @@ func Pg_Find_QtyCodesRegistered(idbusiness int, idcountry int) (int, error) {
 	defer cancel()
 
 	var codesregistered_pg int
-	var db *pgxpool.Pool
 
-	random := rand.Intn(4)
-	if random%2 == 0 {
-		db = models.Conectar_Pg_DB()
-	} else {
-		db = models.Conectar_Pg_DB_Slave()
-	}
+	db := models.Conectar_Pg_DB()
 
 	q := "SELECT codesregistered FROM BusinessWorker WHERE idcomensal=$1 AND idcountry=$2 LIMIT 1"
 	error_query := db.QueryRow(ctx, q, idbusiness, idcountry).Scan(&codesregistered_pg)
@@ -157,14 +125,8 @@ func Pg_Find_SubWorkers(idbusiness int) ([]models.Pg_SubWorker, int, error) {
 
 	//Contador
 	quantity := 0
-	var db *pgxpool.Pool
 
-	random := rand.Intn(4)
-	if random%2 == 0 {
-		db = models.Conectar_Pg_DB()
-	} else {
-		db = models.Conectar_Pg_DB_Slave()
-	}
+	db := models.Conectar_Pg_DB()
 
 	q := "SELECT idworker,idbusiness,name,lastname,idcountry,phone,TO_CHAR(createddate, 'dd Mon, yyyy HH12:MI AM') FROM businessworker WHERE isdeleted=false AND idrol<>1 AND idbusiness=$1"
 	rows, error_query := db.Query(ctx, q, idbusiness)
@@ -196,14 +158,8 @@ func Pg_Find_Qty_SubWorkers(idbusiness int) ([]int, int, error) {
 
 	//Contador
 	quantity := 0
-	var db *pgxpool.Pool
 
-	random := rand.Intn(4)
-	if random%2 == 0 {
-		db = models.Conectar_Pg_DB()
-	} else {
-		db = models.Conectar_Pg_DB_Slave()
-	}
+	db := models.Conectar_Pg_DB()
 
 	q := "SELECT idworker FROM businessworker WHERE idbusiness=$1 AND idrol=$2"
 	rows, error_query := db.Query(ctx, q, idbusiness, 2)
@@ -234,14 +190,8 @@ func Pg_FindByEmail(email string) (models.Pg_BusinessWorker, error) {
 	defer cancel()
 
 	var anfitrion models.Pg_BusinessWorker
-	var db *pgxpool.Pool
 
-	random := rand.Intn(4)
-	if random%2 == 0 {
-		db = models.Conectar_Pg_DB()
-	} else {
-		db = models.Conectar_Pg_DB_Slave()
-	}
+	db := models.Conectar_Pg_DB()
 
 	q := `SELECT idbusiness,idworker,idcountry,idrol,password,name,lastname,isbanned,sessioncode,isdeleted,email,iddevice FROM BusinessWorker WHERE email=$1 AND  isdeleted=false LIMIT 1`
 	error_show := db.QueryRow(ctx, q, email).Scan(&anfitrion.IdBusiness, &anfitrion.IdWorker, &anfitrion.IdCountry, &anfitrion.IdRol, &anfitrion.Password, &anfitrion.Name, &anfitrion.LastName, &anfitrion.Isbanned, &anfitrion.SessionCode, &anfitrion.IsDeleted, &anfitrion.Email, &anfitrion.IDDevice)
@@ -259,14 +209,8 @@ func Pg_Find_IDDevice(idbusiness int) ([]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 	//defer cancelara el contexto
 	defer cancel()
-	var db *pgxpool.Pool
 
-	random := rand.Intn(4)
-	if random%2 == 0 {
-		db = models.Conectar_Pg_DB()
-	} else {
-		db = models.Conectar_Pg_DB_Slave()
-	}
+	db := models.Conectar_Pg_DB()
 
 	q := "SELECT iddevice FROM businessworker WHERE idbusiness=$1 and iddevice<>''"
 	rows, error_query := db.Query(ctx, q, idbusiness)
@@ -309,14 +253,8 @@ func Pg_Find_IDDevice_Many(inputmanybusinesses []int) ([]string, error) {
 	oListBusiness = oListBusiness[0 : len(oListBusiness)-4]
 
 	//Enviamos la Query
-	var db *pgxpool.Pool
 
-	random := rand.Intn(4)
-	if random%2 == 0 {
-		db = models.Conectar_Pg_DB()
-	} else {
-		db = models.Conectar_Pg_DB_Slave()
-	}
+	db := models.Conectar_Pg_DB()
 
 	q := "SELECT iddevice FROM businessworker WHERE iddevice<>'' AND" + oListBusiness
 	rows, error_query := db.Query(ctx, q)
@@ -344,14 +282,8 @@ func Pg_Find_IDDevice_All() ([]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 	//defer cancelara el contexto
 	defer cancel()
-	var db *pgxpool.Pool
 
-	random := rand.Intn(4)
-	if random%2 == 0 {
-		db = models.Conectar_Pg_DB()
-	} else {
-		db = models.Conectar_Pg_DB_Slave()
-	}
+	db := models.Conectar_Pg_DB()
 
 	q := "SELECT iddevice FROM businessworker WHERE iddevice<>''"
 	rows, error_query := db.Query(ctx, q)
@@ -386,14 +318,8 @@ func V2_Pg_Find_SubWorkers(idbusiness int) ([]models.V2_Pg_SubWorker, int, error
 
 	//Contador
 	quantity := 0
-	var db *pgxpool.Pool
 
-	random := rand.Intn(4)
-	if random%2 == 0 {
-		db = models.Conectar_Pg_DB()
-	} else {
-		db = models.Conectar_Pg_DB_Slave()
-	}
+	db := models.Conectar_Pg_DB()
 
 	q := "SELECT idworker,idbusiness,name,lastname,email,idrol FROM businessworker WHERE isdeleted=false AND idrol<>1 AND idbusiness=$1 ORDER BY idrol DESC"
 	rows, error_query := db.Query(ctx, q, idbusiness)
@@ -424,14 +350,8 @@ func V2_Pg_Find_SubWorkers_ToWorker(idworker int) (models.V2_Pg_SubWorker, error
 	defer cancel()
 
 	var subworker_pg models.V2_Pg_SubWorker
-	var db *pgxpool.Pool
 
-	random := rand.Intn(4)
-	if random%2 == 0 {
-		db = models.Conectar_Pg_DB()
-	} else {
-		db = models.Conectar_Pg_DB_Slave()
-	}
+	db := models.Conectar_Pg_DB()
 
 	q := "SELECT idworker,idbusiness,name,lastname,email,idrol FROM businessworker WHERE idworker=$1"
 	error_query := db.QueryRow(ctx, q, idworker).Scan(&subworker_pg.IdWorker, &subworker_pg.IdBusiness, &subworker_pg.Name, &subworker_pg.LastName, &subworker_pg.Email, &subworker_pg.IdRol)
@@ -451,14 +371,8 @@ func Pg_Find_Email(idworker int) (string, error) {
 	defer cancel()
 
 	var emailfound string
-	var db *pgxpool.Pool
 
-	random := rand.Intn(4)
-	if random%2 == 0 {
-		db = models.Conectar_Pg_DB()
-	} else {
-		db = models.Conectar_Pg_DB_Slave()
-	}
+	db := models.Conectar_Pg_DB()
 
 	q := "SELECT email FROM businessworker WHERE idworker=$1"
 	error_query := db.QueryRow(ctx, q, idworker).Scan(&emailfound)

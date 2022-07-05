@@ -2,11 +2,9 @@ package repositories
 
 import (
 	"context"
-	"math/rand"
 	"time"
 
 	models "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/models"
-	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 func Pg_Find_IfIsAvailable() (bool, error) {
@@ -17,14 +15,8 @@ func Pg_Find_IfIsAvailable() (bool, error) {
 	defer cancel()
 
 	var available bool
-	var db *pgxpool.Pool
 
-	random := rand.Intn(4)
-	if random%2 == 0 {
-		db = models.Conectar_Pg_DB()
-	} else {
-		db = models.Conectar_Pg_DB_Slave()
-	}
+	db := models.Conectar_Pg_DB()
 
 	q := "SELECT availableregister FROM comensal WHERE idcomensal=1"
 	error_query := db.QueryRow(ctx, q).Scan(&available)
