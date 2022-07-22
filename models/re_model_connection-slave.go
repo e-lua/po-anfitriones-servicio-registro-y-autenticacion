@@ -1,5 +1,6 @@
 package models
 
+/*
 import (
 	"log"
 	"math/rand"
@@ -42,4 +43,4 @@ func GetConn_Slave() *redis.Pool {
 	})
 
 	return p_slave
-}
+}*/
