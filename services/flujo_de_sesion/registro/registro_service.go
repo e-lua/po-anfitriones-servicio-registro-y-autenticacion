@@ -52,6 +52,10 @@ func SignUpNumber_Service(inputcode models.Re_SetGetCode) (int, bool, string, Si
 		return 406, true, "El codigo de pais ingresado no esta incluido en la lista países disponibles de Restoner", phone_and_code
 	}
 
+	/*if inputcode.PhoneRegister_Key == 938198374 || inputcode.PhoneRegister_Key == 938488229 {
+		return 406, true, "Su equipo ha sido identificado como sospechoso", phone_and_code
+	}*/
+
 	//Verificamos que no sea spam
 	quantity, _ := worker_repository.Pg_Find_QtyCodesRegistered(inputcode.PhoneRegister_Key, inputcode.Code)
 	if quantity > 9 {
