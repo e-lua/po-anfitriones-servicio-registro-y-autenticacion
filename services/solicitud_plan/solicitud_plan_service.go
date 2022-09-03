@@ -2,6 +2,8 @@ package solicitud_plan
 
 import (
 	"log"
+	"strconv"
+	"time"
 
 	//TWILIO
 	twilio "github.com/twilio/twilio-go"
@@ -9,6 +11,10 @@ import (
 )
 
 func Anfitriones_SendRequest_Service(idbusiness int, timezone string) (int, bool, string, string) {
+
+	ahora := time.Now()
+	time_zones, _ := strconv.Atoi(timezone)
+	fecha := ahora.Add(time.Hour * time.Duration(time_zones))
 
 	//Enviamos el codigo al anfitrion
 	client := twilio.NewRestClientWithParams(twilio.RestClientParams{
@@ -18,7 +24,7 @@ func Anfitriones_SendRequest_Service(idbusiness int, timezone string) (int, bool
 	params := &openapi.CreateMessageParams{}
 	params.SetTo("whatsapp:+51938488229")
 	params.SetFrom("whatsapp:+14155238886")
-	params.SetBody("Hello from Golang!")
+	params.SetBody("Deseo el PLAN BUSINESS, mi id es: " + strconv.Itoa(idbusiness) + " - " + fecha.Format("2006-01-02 3:4:5 pm"))
 
 	_, err := client.ApiV2010.CreateMessage(params)
 	if err != nil {

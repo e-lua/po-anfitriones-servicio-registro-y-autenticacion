@@ -72,7 +72,7 @@ func Manejadores() {
 	router_login := version_1.Group("/trylogin")
 	router_login.GET("", login.Loginrouter.TryingLogin)
 
-	//V1 FROM V1 TO ...TO ENTITY RECEIPT
+	//V1 FROM V1 TO ...TO ENTITY SOLICITUD
 	router_solicitud := version_1.Group("/solicitud")
 	router_solicitud.POST("/sendrequest", solicitud.AnfitrionRouter_pg.Anfitriones_SendRequest)
 
