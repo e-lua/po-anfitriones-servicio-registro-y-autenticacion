@@ -24,7 +24,7 @@ func Conectar_Pg_DB() *pgxpool.Pool {
 	defer cancel()
 
 	once_pg.Do(func() {
-		urlString := "postgres://postgresx:adsfg465WFVFGdsrf3465QWFDSFGH4fsadf4fwedf@postgres-master:5432/postgresx?pool_max_conns=45"
+		urlString := "postgres://postgresx:adsfg465WFVFGdsrf3465QWFDSFGH4fsadf4fwedf@postgres-master:5432/postgresx?pool_max_conns=35"
 
 		config, error_connec_pg := pgxpool.ParseConfig(urlString)
 

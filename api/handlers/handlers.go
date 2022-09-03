@@ -13,6 +13,7 @@ import (
 	profile "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/services/flujo_de_perfil/profile"
 	login "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/services/flujo_de_sesion/login"
 	register "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/services/flujo_de_sesion/registro"
+	solicitud "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/services/solicitud_plan"
 )
 
 func Manejadores() {
@@ -70,6 +71,10 @@ func Manejadores() {
 	//V1 TO TRYLOGIN
 	router_login := version_1.Group("/trylogin")
 	router_login.GET("", login.Loginrouter.TryingLogin)
+
+	//V1 FROM V1 TO ...TO ENTITY RECEIPT
+	router_solicitud := version_1.Group("/solicitud")
+	router_solicitud.POST("/sendrequest", solicitud.AnfitrionRouter_pg.Anfitriones_SendRequest)
 
 	//V1 TO COLABORADOR A EXPORTAR - SE UTILIZA EN PEDIDOS, PERO SE VA A BORRAR
 	router_colaborador_to_export_v1 := version_1.Group("/subworkertoexport")
