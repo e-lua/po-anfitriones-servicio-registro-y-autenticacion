@@ -1,6 +1,7 @@
 package login
 
 import (
+	"log"
 	"strconv"
 	"time"
 
@@ -10,6 +11,10 @@ import (
 	//MDOELS
 	models "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/models"
 	worker_reposiroty "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/repositories/worker"
+
+	//TWILIO
+	twilio "github.com/twilio/twilio-go"
+	openapi "github.com/twilio/twilio-go/rest/api/v2010"
 )
 
 //FUNCIONES PRIVADAS
@@ -51,6 +56,32 @@ func generateJWT(anfitrion models.Pg_BusinessWorker) (string, error) {
 	}
 
 	return tokenStr, nil
+}
+
+func notificacionWABA(country int, phone int) (int, bool, string, string) {
+
+	ahora := time.Now()
+	time_zones, _ := strconv.Atoi("-5")
+	fecha := ahora.Add(time.Hour * time.Duration(time_zones))
+
+	//Enviamos el codigo al anfitrion
+	client := twilio.NewRestClientWithParams(twilio.RestClientParams{
+		Username: "ACeb643456bb0e06813948315b95c3aa98",
+		Password: "b6febb18bf85369763c4a303937137d9",
+	})
+
+	params := &openapi.CreateMessageParams{}
+	params.SetTo("whatsapp:+" + strconv.Itoa(country) + strconv.Itoa(phone))
+	params.SetFrom("whatsapp:+17816503313")
+	params.SetBody(`*Restoner:* Acabaste de iniciar sesión en una cuenta de Restoner Anfitriones el ` + fecha.Format("2006-01-02 3:4:5 pm") + ` si no fue tu, comunicate con el equipo de soporte +51938488229`)
+
+	_, err := client.ApiV2010.CreateMessage(params)
+	if err != nil {
+		log.Println("Error Twilio---->", err.Error())
+		return 200, false, "", "Solicitud enviada correctamente"
+	}
+
+	return 200, false, "", "Solicitud enviada correctamente"
 }
 
 //FUNCIONES PUBLICAS
@@ -183,6 +214,10 @@ func Login_Service(inputanfitrion models.Pg_BusinessWorker) (int, bool, string, 
 	jwt_and_rol.Name = worker_found.Name
 	jwt_and_rol.Lastname = worker_found.LastName
 	jwt_and_rol.ID = worker_found.IdBusiness
+
+	if inputanfitrion.Phone > 0 {
+		notificacionWABA(worker_found.IdCountry, inputanfitrion.Phone)
+	}
 
 	return 201, false, "", jwt_and_rol
 }
