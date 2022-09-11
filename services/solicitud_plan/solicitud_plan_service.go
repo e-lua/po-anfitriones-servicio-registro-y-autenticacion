@@ -24,7 +24,7 @@ func Anfitriones_SendRequest_Service(idbusiness int, timezone string) (int, bool
 	params := &openapi.CreateMessageParams{}
 	params.SetTo("whatsapp:+51938488229")
 	params.SetFrom("whatsapp:+17816503313")
-	params.SetBody("Deseo el PLAN BUSINESS, mi id es: " + strconv.Itoa(idbusiness) + " - " + fecha.Format("2006-01-02 3:4:5 pm"))
+	params.SetBody("El negocio con *Id* " + strconv.Itoa(idbusiness) + " ha solicitado una inscripción al PLAN BUSINESS *el día* " + fecha.Format("2006-01-02 3:4:5 pm"))
 
 	_, err := client.ApiV2010.CreateMessage(params)
 	if err != nil {
