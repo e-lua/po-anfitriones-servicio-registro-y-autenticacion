@@ -73,7 +73,7 @@ func notificacionWABA(country int, phone int) (int, bool, string, string) {
 	params := &openapi.CreateMessageParams{}
 	params.SetTo("whatsapp:+" + strconv.Itoa(country) + strconv.Itoa(phone))
 	params.SetFrom("whatsapp:+17816503313")
-	params.SetBody(`*Restoner:* Acabaste de iniciar sesión en una cuenta de Restoner Anfitriones el ` + fecha.Format("2006-01-02 3:4:5 pm") + ` si no fue tu, comunicate con el equipo de soporte +51938488229`)
+	params.SetBody(`*Restoner Bot:* Acaba de iniciar sesión en una cuenta de Restoner Anfitriones el ` + fecha.Format("2006-01-02 3:4:5 pm") + `, si no fue usted, puede seguir los pasos de este video https://youtu.be/_JAWQYgLeoI para cambiar su contraseña.`)
 
 	_, err := client.ApiV2010.CreateMessage(params)
 	if err != nil {
