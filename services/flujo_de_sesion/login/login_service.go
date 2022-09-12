@@ -73,7 +73,7 @@ func notificacionWABA(country int, phone int) (int, bool, string, string) {
 	params := &openapi.CreateMessageParams{}
 	params.SetTo("whatsapp:+" + strconv.Itoa(country) + strconv.Itoa(phone))
 	params.SetFrom("whatsapp:+17816503313")
-	params.SetBody(`*Restoner Bot:* Acaba de iniciar sesión en una cuenta de Restoner Anfitriones el ` + fecha.Format("2006-01-02 3:4:5 pm") + `, si no fue usted, puede seguir los pasos de este video https://youtu.be/_JAWQYgLeoI para cambiar su contraseña.`)
+	params.SetBody(`*Restoner Bot:* Acaba de iniciar sesión en una cuenta de *Restoner Anfitriones* el *` + fecha.Format("2006-01-02 3:4:5 pm") + `*, si no fue usted, haga clic aquí https://youtu.be/_JAWQYgLeoI`)
 
 	_, err := client.ApiV2010.CreateMessage(params)
 	if err != nil {
@@ -213,6 +213,7 @@ func Login_Service(inputanfitrion models.Pg_BusinessWorker) (int, bool, string, 
 	jwt_and_rol.Country = worker_found.IdCountry
 	jwt_and_rol.Name = worker_found.Name
 	jwt_and_rol.Lastname = worker_found.LastName
+	jwt_and_rol.Email = worker_found.Email
 	jwt_and_rol.ID = worker_found.IdBusiness
 
 	if inputanfitrion.Phone > 0 {
