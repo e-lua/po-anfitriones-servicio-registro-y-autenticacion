@@ -268,7 +268,7 @@ func V2_Login_Service(input_login Input_BusinessWorker_login) (int, bool, string
 		jwt_and_rol.Country = worker_found.IdCountry
 		jwt_and_rol.Name = worker_found.Name
 		jwt_and_rol.Lastname = worker_found.LastName
-		jwt_and_rol.Email = "anfitrion - sin email"
+		jwt_and_rol.Email = worker_found.Email
 		jwt_and_rol.ID = worker_found.IdBusiness
 
 	} else {
