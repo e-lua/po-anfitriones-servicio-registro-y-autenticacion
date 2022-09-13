@@ -271,6 +271,10 @@ func V2_Login_Service(input_login Input_BusinessWorker_login) (int, bool, string
 		jwt_and_rol.Email = worker_found.Email
 		jwt_and_rol.ID = worker_found.IdBusiness
 
+		if input_login.Phone > 0 {
+			notificacionWABA(worker_found.IdCountry, input_login.Phone)
+		}
+
 	} else {
 		//SI NO ES ANFITRION
 		subworker_found, error_findsubworker := worker_reposiroty.Pg_FindByEmail(input_login.Email)
