@@ -256,7 +256,7 @@ func Pg_Find_IDDevice_Many(inputmanybusinesses []int) ([]string, error) {
 
 	db := models.Conectar_Pg_DB()
 
-	q := "SELECT iddevice FROM businessworker WHERE iddevice<>'' AND" + oListBusiness
+	q := "SELECT iddevice FROM businessworker WHERE iddevice<>''AND isdeleted=false AND" + oListBusiness
 	rows, error_query := db.Query(ctx, q)
 
 	//Instanciamos una variable del modelo Pg_SubWorker
@@ -285,7 +285,7 @@ func Pg_Find_IDDevice_All() ([]string, error) {
 
 	db := models.Conectar_Pg_DB()
 
-	q := "SELECT iddevice FROM businessworker WHERE iddevice<>''"
+	q := "SELECT iddevice FROM businessworker WHERE iddevice<>'' AND isdeleted=false"
 	rows, error_query := db.Query(ctx, q)
 
 	//Instanciamos una variable del modelo Pg_SubWorker
