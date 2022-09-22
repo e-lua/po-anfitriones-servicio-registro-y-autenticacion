@@ -67,8 +67,8 @@ func Pg_Update_QtyCodesRegistered(phonenumber int, country int) error {
 
 	db := models.Conectar_Pg_DB()
 
-	query := `UPDATE BusinessWorker SET codesregistered=codesregistered+1,updateddate=$1 WHERE phone=$2 AND idcountry=$3`
-	if _, err_update := db.Exec(ctx, query, time.Now(), phonenumber, country); err_update != nil {
+	query := `UPDATE BusinessWorker SET codesregistered=codesregistered+1 WHERE phone=$1 AND idcountry=$2`
+	if _, err_update := db.Exec(ctx, query, phonenumber, country); err_update != nil {
 		return err_update
 	}
 

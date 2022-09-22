@@ -95,7 +95,7 @@ func Pg_FindPassword_ById(idbusiness int) (string, int, error) {
 
 }
 
-func Pg_Find_QtyCodesRegistered(idbusiness int, idcountry int) (int, error) {
+func Pg_Find_QtyCodesRegistered(phone int, idcountry int) (int, error) {
 
 	//Tiempo limite al contexto
 	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
@@ -106,8 +106,8 @@ func Pg_Find_QtyCodesRegistered(idbusiness int, idcountry int) (int, error) {
 
 	db := models.Conectar_Pg_DB()
 
-	q := "SELECT codesregistered FROM BusinessWorker WHERE idcomensal=$1 AND idcountry=$2 LIMIT 1"
-	error_query := db.QueryRow(ctx, q, idbusiness, idcountry).Scan(&codesregistered_pg)
+	q := "SELECT codesregistered FROM BusinessWorker WHERE phone=$1 AND idcountry=$2 LIMIT 1"
+	error_query := db.QueryRow(ctx, q, phone, idcountry).Scan(&codesregistered_pg)
 
 	if error_query != nil {
 		return codesregistered_pg, error_query

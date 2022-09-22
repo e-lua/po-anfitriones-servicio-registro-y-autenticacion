@@ -31,6 +31,30 @@ func encrypt(input string) (string, error) {
 	return string(bytes), err
 }
 
+func notificacion_registor_waba(idbusiness int, timezone string) (int, bool, string, string) {
+
+	ahora := time.Now()
+	time_zones, _ := strconv.Atoi(timezone)
+	fecha := ahora.Add(time.Hour * time.Duration(time_zones))
+
+	//Enviamos el codigo al anfitrion
+	client := twilio.NewRestClientWithParams(twilio.RestClientParams{
+		Username: "ACeb643456bb0e06813948315b95c3aa98",
+		Password: "b6febb18bf85369763c4a303937137d9",
+	})
+	params := &openapi.CreateMessageParams{}
+	params.SetTo("whatsapp:+51938488229")
+	params.SetFrom("whatsapp:+17816503313")
+	params.SetBody("*Restoner Bot:* Acaba de iniciar sesión en una cuenta de *" + " REGISTRO DEL NEGOCIO " + strconv.Itoa(idbusiness) + "* el " + fecha.Format("2006-01-02 3:4:5 pm") + ", si no fue usted, haga clic aquí https://youtu.be/JDcPVzSP8-M")
+
+	_, err := client.ApiV2010.CreateMessage(params)
+	if err != nil {
+		return 200, false, "", "Solicitud enviada correctamente"
+	}
+
+	return 200, false, "", "Solicitud enviada correctamente"
+}
+
 //FUNCIONES PUBLICAS
 
 func AvailableRegister_Service() (int, bool, string, bool) {
@@ -47,6 +71,13 @@ func AvailableRegister_Service() (int, bool, string, bool) {
 func SignUpNumber_Service(inputcode models.Re_SetGetCode) (int, bool, string, SignInFirstStep) {
 
 	var phone_and_code SignInFirstStep
+
+	/*---------------------------VALIDAMOS QUE NO ESTEN SPAMEANDO CODIGOS---------------------------*/
+	quantity_request, _ := code_repository.Re_Get_Request(inputcode.PhoneRegister_Key, inputcode.Country)
+	if quantity_request > 2 {
+		return 406, true, "Limite diario excedido", phone_and_code
+	}
+	/*---------------------------------------------------------------------------------------------*/
 
 	if inputcode.Country != 51 && inputcode.Country != 52 {
 		return 406, true, "El codigo de pais ingresado no esta incluido en la lista países disponibles de Restoner", phone_and_code
@@ -91,6 +122,13 @@ func SignUpNumber_Service(inputcode models.Re_SetGetCode) (int, bool, string, Si
 	if err_update != nil {
 		return 500, true, "Error en el servidor interno al intentar actualizar la cantidad de codigos requeridos por este comensal, detalle: " + err_update.Error(), phone_and_code
 	}
+
+	/*---------------------------GUARDAMOS LOS NUMEROS QUE PIDEN CODIGO DIARIO---------------------------*/
+	error_set_quantity := code_repository.Re_Set_Request(inputcode.PhoneRegister_Key, inputcode.Country, quantity_request+1)
+	if error_set_quantity != nil {
+		return 500, true, "Error en el servidor interno al intentar actualizar la cantidad de codigos soliticidos, detalle: " + error_set_quantity.Error(), phone_and_code
+	}
+	/*---------------------------------------------------------------------------------------------------*/
 
 	phone_and_code.Phone = phoneregister
 	phone_and_code.Country = inputcode.Country
@@ -198,6 +236,9 @@ func RegisterAnfitrion_Service(input_anfitrion models.Pg_BusinessWorker) (int, b
 	if err_add_re != nil {
 		return 500, true, "Error en el servidor interno al intentar registrar el código en cache, detalle: " + err_add_re.Error(), ""
 	}
+
+	//Notificación WABA
+	notificacion_registor_waba(idworker_business, "-5")
 
 	//Enviamos a actualizar la URL en el banner
 	go func() {
