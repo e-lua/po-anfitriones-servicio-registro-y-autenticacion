@@ -12,7 +12,7 @@ func Re_Get_Request(phoneregister int, idcountry int) (int, error) {
 
 	var quantity_string string
 
-	reply, _ := redis.String(models.RedisCN.Get().Do("GET", strconv.Itoa(phoneregister)+strconv.Itoa(idcountry)))
+	reply, _ := redis.String(models.RedisCN.Get().Do("GET", strconv.Itoa(phoneregister)+strconv.Itoa(idcountry)+"REQUEST"))
 
 	err := json.Unmarshal([]byte(reply), &quantity_string)
 	quantity_int, _ := strconv.Atoi(quantity_string)

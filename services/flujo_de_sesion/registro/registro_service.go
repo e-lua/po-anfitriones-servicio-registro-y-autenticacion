@@ -73,7 +73,10 @@ func SignUpNumber_Service(inputcode models.Re_SetGetCode) (int, bool, string, Si
 	var phone_and_code SignInFirstStep
 
 	/*---------------------------VALIDAMOS QUE NO ESTEN SPAMEANDO CODIGOS---------------------------*/
-	quantity_request, _ := code_repository.Re_Get_Request(inputcode.PhoneRegister_Key, inputcode.Country)
+	quantity_request, error_request := code_repository.Re_Get_Request(inputcode.PhoneRegister_Key, inputcode.Country)
+	if error_request != nil {
+		return 500, true, "Error en el servidor interno al intentar obtener la cantidad de codigos solicitados, detalle: " + error_request.Error(), phone_and_code
+	}
 	if quantity_request > 2 {
 		return 406, true, "Limite diario excedido", phone_and_code
 	}
