@@ -76,6 +76,7 @@ func SignUpNumber_Service(inputcode models.Re_SetGetCode) (int, bool, string, Si
 	quantity_request, error_request := code_repository.Re_Get_Request(inputcode.PhoneRegister_Key, inputcode.Country)
 	if error_request != nil {
 		/*---------------------------GUARDAMOS LOS NUMEROS QUE PIDEN CODIGO DIARIO---------------------------*/
+		log.Print("Error al obtener los request ", error_request.Error())
 		error_set_quantity := code_repository.Re_Set_Request(inputcode.PhoneRegister_Key, inputcode.Country, 0)
 		if error_set_quantity != nil {
 			return 500, true, "Error en el servidor interno al intentar actualizar la cantidad de codigos soliticidos, detalle: " + error_set_quantity.Error(), phone_and_code
