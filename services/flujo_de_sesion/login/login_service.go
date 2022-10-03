@@ -272,7 +272,7 @@ func V2_Login_Service(input_login Input_BusinessWorker_login) (int, bool, string
 		jwt_and_rol.ID = worker_found.IdBusiness
 
 		if input_login.Phone > 0 {
-			notificacionWABA(worker_found.IdCountry, input_login.Phone)
+			//notificacionWABA(worker_found.IdCountry, input_login.Phone)
 		}
 
 	} else {
