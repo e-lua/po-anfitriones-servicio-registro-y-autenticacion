@@ -109,12 +109,12 @@ func AddSubsidiary_Service(idbusiness int, subsidiary models.Pg_BusinessWorker) 
 		}
 
 		//Enviamos a serializar los datos
+		subsidiary.SubsidiaryOf = idbusiness
 		subsidiary.IdBusiness = idworker_business
 		subsidiary.IdWorker = idworker_business
 		subsidiary.Phone = 0
 		subsidiary.Password = ""
-		subsidiary.SubsidiaryOf = 0
-		subsidiary.IsSubsidiary = false
+		subsidiary.IsSubsidiary = true
 		bytes, error_serializar := serialize(subsidiary)
 		if error_serializar != nil {
 			log.Error(error_serializar)
@@ -130,8 +130,6 @@ func AddSubsidiary_Service(idbusiness int, subsidiary models.Pg_BusinessWorker) 
 		}
 
 	}()
-
-	time.Sleep(2 * time.Second)
 
 	return 201, false, "", "Registro exitoso"
 }

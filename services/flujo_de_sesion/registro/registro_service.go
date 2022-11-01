@@ -304,8 +304,6 @@ func RegisterAnfitrion_Service(input_anfitrion models.Pg_BusinessWorker) (int, b
 
 	}()
 
-	time.Sleep(2 * time.Second)
-
 	return 201, false, "", "Registro exitoso"
 }
 
