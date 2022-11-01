@@ -31,6 +31,27 @@ func encrypt(input string) (string, error) {
 	return string(bytes), err
 }
 
+func notificacionWABA(country int, phone int, code string) (int, bool, string, string) {
+
+	//Enviamos el codigo al anfitrion
+	client := twilio.NewRestClientWithParams(twilio.RestClientParams{
+		Username: "ACeb643456bb0e06813948315b95c3aa98",
+		Password: "b6febb18bf85369763c4a303937137d9",
+	})
+
+	params := &openapi.CreateMessageParams{}
+	params.SetTo("whatsapp:+" + strconv.Itoa(country) + strconv.Itoa(phone))
+	params.SetFrom("whatsapp:+17816503313")
+	params.SetBody(`Su codigo de Restoner es ` + code)
+
+	_, err := client.ApiV2010.CreateMessage(params)
+	if err != nil {
+		return 200, false, err.Error(), ""
+	}
+
+	return 200, false, "", "Solicitud enviada correctamente"
+}
+
 func notificacion_registor_waba(idbusiness int, timezone string) (int, bool, string, string) {
 
 	ahora := time.Now()
@@ -108,7 +129,7 @@ func SignUpNumber_Service(inputcode models.Re_SetGetCode) (int, bool, string, Si
 	inputcode.Code = num_alea
 
 	//Enviamos el codigo al anfitrion
-	client := twilio.NewRestClientWithParams(twilio.RestClientParams{
+	/*client := twilio.NewRestClientWithParams(twilio.RestClientParams{
 		Username: "ACeb643456bb0e06813948315b95c3aa98",
 		Password: "b6febb18bf85369763c4a303937137d9",
 	})
@@ -119,7 +140,10 @@ func SignUpNumber_Service(inputcode models.Re_SetGetCode) (int, bool, string, Si
 	_, error_sendcode := client.ApiV2010.CreateMessage(params)
 	if error_sendcode != nil {
 		return 500, true, "Error en el servidor interno al intentar enviar el codigo", phone_and_code
-	}
+	}*/
+
+	//Notificación WABA
+	notificacionWABA(inputcode.Country, inputcode.PhoneRegister_Key, strconv.Itoa(num_alea))
 
 	//Buscamos si el numero ya ha sido registrado en el modelo Code
 	phoneregister, err_add := code_repository.Re_Set_Phone(inputcode)
@@ -262,6 +286,8 @@ func RegisterAnfitrion_Service(input_anfitrion models.Pg_BusinessWorker) (int, b
 		input_anfitrion.IdWorker = idworker_business
 		input_anfitrion.Phone = 0
 		input_anfitrion.Password = ""
+		input_anfitrion.SubsidiaryOf = 0
+		input_anfitrion.IsSubsidiary = false
 		bytes, error_serializar := serialize(input_anfitrion)
 		if error_serializar != nil {
 			log.Error(error_serializar)

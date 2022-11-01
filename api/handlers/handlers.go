@@ -14,6 +14,7 @@ import (
 	login "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/services/flujo_de_sesion/login"
 	register "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/services/flujo_de_sesion/registro"
 	solicitud "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/services/solicitud_plan"
+	subsidiary "github.com/Aphofisis/po-anfitrion-servicio-registro-y-autenticacion/services/subsidiary"
 )
 
 func Manejadores() {
@@ -75,6 +76,10 @@ func Manejadores() {
 	//V1 FROM V1 TO ...TO ENTITY SOLICITUD
 	router_solicitud := version_1.Group("/solicitud")
 	router_solicitud.POST("/sendrequest", solicitud.AnfitrionRouter_pg.Anfitriones_SendRequest)
+
+	//V1 TO SUBSIDIARY
+	router_subsidiary := version_1.Group("/subsidiary")
+	router_subsidiary.POST("", subsidiary.SubsidiaryRouter.AddSubsidiary)
 
 	//V1 TO COLABORADOR A EXPORTAR - SE UTILIZA EN PEDIDOS, PERO SE VA A BORRAR
 	router_colaborador_to_export_v1 := version_1.Group("/subworkertoexport")
