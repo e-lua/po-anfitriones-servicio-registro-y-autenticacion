@@ -286,7 +286,7 @@ func RegisterAnfitrion_Service(input_anfitrion models.Pg_BusinessWorker) (int, b
 		input_anfitrion.IdWorker = idworker_business
 		input_anfitrion.Phone = 0
 		input_anfitrion.Password = ""
-		input_anfitrion.SubsidiaryOf = 0
+		input_anfitrion.SubsidiaryOf = idworker_business
 		input_anfitrion.IsSubsidiary = false
 		bytes, error_serializar := serialize(input_anfitrion)
 		if error_serializar != nil {
